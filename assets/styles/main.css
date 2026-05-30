@@ -1,0 +1,174 @@
+:root {
+  --primary-nature: #114232;
+  --primary-nature-light: #F2F9F6;
+  --accent-water: #007F73;
+  --accent-water-light: #E8F9FD;
+  --warning-alert: #ff9f1c;
+  --danger-alert: #e71d36;
+  --dark-sidebar: #0F2C24;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: #f8fafc;
+  color: #1e293b;
+  overflow-x: hidden;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  background: linear-gradient(180deg, var(--dark-sidebar) 0%, #071914 100%);
+  min-height: 100vh;
+  color: rgba(255, 255, 255, 0.85);
+  transition: all 0.3s ease;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.05);
+  z-index: 100;
+}
+
+.sidebar .nav-link {
+  color: rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
+  margin: 4px 15px;
+  padding: 12px 18px;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.sidebar .nav-link:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.08);
+  transform: translateX(4px);
+}
+
+.sidebar .nav-link.active {
+  color: #ffffff;
+  background: linear-gradient(90deg, var(--accent-water) 0%, #114232 100%);
+  box-shadow: 0 4px 12px rgba(0, 127, 115, 0.25);
+}
+
+/* Card Styles */
+.custom-card {
+  background-color: #ffffff;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.custom-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.04);
+}
+
+/* Map Styles */
+#map {
+  height: 520px;
+  width: 100%;
+  border-radius: 14px;
+  z-index: 1;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.map-hint {
+  font-size: 0.8rem;
+  border-radius: 8px;
+  background-color: rgba(15, 44, 36, 0.9);
+  color: #fff;
+  padding: 8px 12px;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* IoT Console */
+.iot-console {
+  background-color: #0d1117;
+  color: #39ff14;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.8rem;
+  max-height: 150px;
+  overflow-y: auto;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+/* Pulse Animation */
+.pulse-marker {
+  display: inline-block;
+  border-radius: 50%;
+  animation: pulse-animation 2s infinite;
+}
+
+@keyframes pulse-animation {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 127, 115, 0.5);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 8px rgba(0, 127, 115, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 127, 115, 0);
+  }
+}
+
+/* Toast Container */
+.toast-container-custom {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.soft-toast {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  width: 320px;
+  pointer-events: auto;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform: translateY(20px);
+  opacity: 0;
+  border-left: 5px solid var(--accent-water);
+}
+
+.soft-toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.soft-toast.toast-danger {
+  border-left-color: var(--danger-alert);
+}
+
+.soft-toast.toast-warning {
+  border-left-color: var(--warning-alert);
+}
+
+@media (max-width: 991.98px) {
+  .sidebar {
+    min-height: auto;
+    position: relative;
+    width: 100%;
+  }
+}

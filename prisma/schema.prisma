@@ -1,0 +1,168 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum RoleName {
+  ADMIN
+  PETUGAS
+  PENELITI
+  VIEWER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+model wp_water_points {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  district    String
+  lat         Decimal  @db.Decimal(10, 8)
+  lng         Decimal  @db.Decimal(11, 8)
+  debit       Decimal  @default(0) @db.Decimal(10, 2)
+  status      String   @default("Layak/Aman")
+  source      String   @default("Manual Petugas")
+  topic       String   @unique
+  description String?  @db.Text
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now()) @updatedAt
+
+  @@index([status])
+  @@index([topic])
+  @@index([district])
+}
+
+model rbac_roles {
+  id          Int                   @id @default(autoincrement())
+  name        RoleName              @unique
+  description String?               @db.Text
+  created_at  DateTime              @default(now())
+  updated_at  DateTime              @default(now()) @updatedAt
+  permissions rbac_role_permissions[]
+  users       auth_users[]
+}
+
+model rbac_role_permissions {
+  id       Int        @id @default(autoincrement())
+  role_id  Int
+  action   String
+  resource String
+  role     rbac_roles @relation(fields: [role_id], references: [id], onDelete: Cascade)
+
+  @@unique([role_id, action, resource])
+}
+
+model auth_users {
+  id            Int               @id @default(autoincrement())
+  email         String            @unique
+  password      String            @db.Text
+  full_name     String
+  institution   String?
+  position      String?
+  role_id       Int
+  status        UserStatus        @default(ACTIVE)
+  last_login_at DateTime?
+  created_at    DateTime          @default(now())
+  updated_at    DateTime          @default(now()) @updatedAt
+  role          rbac_roles        @relation(fields: [role_id], references: [id])
+  sessions      auth_sessions[]
+  audit_logs    log_audit_trail[]
+}
+
+model auth_sessions {
+  id         Int        @id @default(autoincrement())
+  user_id    Int
+  token      String     @unique @db.VarChar(512)
+  user_agent String?    @db.Text
+  ip         String?
+  expires_at DateTime
+  created_at DateTime   @default(now())
+  user       auth_users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model log_audit_trail {
+  id          Int        @id @default(autoincrement())
+  user_id     Int?
+  action      String
+  resource    String
+  resource_id Int?
+  old_value   Json?
+  new_value   Json?
+  ip          String?
+  user_agent  String?    @db.Text
+  details     String?    @db.Text
+  created_at  DateTime   @default(now())
+  user        auth_users? @relation(fields: [user_id], references: [id], onDelete: SetNull)
+
+  @@index([action])
+  @@index([user_id])
+  @@index([created_at])
+}
+
+model log_system_metrics {
+  id          Int      @id @default(autoincrement())
+  type        String
+  value       Decimal  @db.Decimal(12, 4)
+  unit        String?
+  source      String?
+  meta        Json?
+  recorded_at DateTime @default(now())
+
+  @@index([type])
+  @@index([recorded_at])
+}
+
+model log_mqtt_messages {
+  id         Int      @id @default(autoincrement())
+  topic      String
+  payload    Json
+  qos        Int      @default(0)
+  retained   Boolean  @default(false)
+  simulated  Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  @@index([topic])
+  @@index([created_at])
+}
+
+model log_api_requests {
+  id          Int      @id @default(autoincrement())
+  method      String
+  path        String
+  status_code Int
+  duration_ms Int
+  user_id     Int?
+  ip          String?
+  user_agent  String?  @db.Text
+  error       String?  @db.Text
+  created_at  DateTime @default(now())
+
+  @@index([path])
+  @@index([created_at])
+}
+
+model gallery_items {
+  id          Int      @id @default(autoincrement())
+  title       String
+  image_url   String   @db.Text
+  caption     String?  @db.Text
+  is_featured Boolean  @default(false)
+  sort_order  Int      @default(0)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now()) @updatedAt
+
+  @@index([sort_order])
+}
