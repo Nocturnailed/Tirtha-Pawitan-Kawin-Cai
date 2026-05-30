@@ -33,7 +33,7 @@
               <span>{{ user.role.name }}</span>
             </div>
             <hr />
-            <button @click="openPasswordModal" class="dropdown-item">
+            <button @click="navigateToProfile" class="dropdown-item">
               <i class="bi bi-key-fill me-2"></i>Ganti Password
             </button>
             <button @click="handleLogout" class="dropdown-item text-danger">
@@ -43,38 +43,6 @@
         </div>
       </div>
     </aside>
-
-    <!-- Change Password Modal -->
-    <div v-if="showPwdModal" class="modal-overlay" @click.self="showPwdModal = false">
-      <div class="modal-content glass-card animate-zoom" style="max-width: 400px;">
-        <div class="modal-header border-0 pb-0">
-          <h5 class="modal-title">Ganti Password</h5>
-          <button class="btn-close btn-close-white" @click="showPwdModal = false"></button>
-        </div>
-        <form @submit.prevent="handleChangePassword">
-          <div class="modal-body py-4">
-            <div class="mb-3">
-              <label class="form-label">Password Lama</label>
-              <input v-model="pwdForm.oldPassword" type="password" class="form-control" required />
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Password Baru</label>
-              <input v-model="pwdForm.newPassword" type="password" class="form-control" required />
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Konfirmasi Password Baru</label>
-              <input v-model="pwdForm.confirmPassword" type="password" class="form-control" required />
-            </div>
-          </div>
-          <div class="modal-footer border-0 pt-0">
-            <button type="button" class="btn btn-secondary" @click="showPwdModal = false">Batal</button>
-            <button type="submit" class="btn btn-primary" :disabled="pwdSubmitting">
-              {{ pwdSubmitting ? 'Memproses...' : 'Simpan Password' }}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
 
     <!-- Content -->
     <div class="content-wrapper">
@@ -97,41 +65,14 @@ const user = ref(null)
 const loading = ref(true)
 const theme = ref('light')
 const showUserMenu = ref(false)
-const showPwdModal = ref(false)
-const pwdSubmitting = ref(false)
-const pwdForm = ref({ oldPassword: '', newPassword: '', confirmPassword: '' })
 
 const toggleTheme = () => {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
 }
 
-const openPasswordModal = () => {
-  pwdForm.value = { oldPassword: '', newPassword: '', confirmPassword: '' }
-  showPwdModal.value = true
+const navigateToProfile = () => {
   showUserMenu.value = false
-}
-
-const handleChangePassword = async () => {
-  if (pwdForm.value.newPassword !== pwdForm.value.confirmPassword) {
-    alert('Konfirmasi password baru tidak cocok')
-    return
-  }
-  pwdSubmitting.value = true
-  try {
-    await $fetch('/api/auth/change-password', {
-      method: 'POST',
-      body: { 
-        oldPassword: pwdForm.value.oldPassword, 
-        newPassword: pwdForm.value.newPassword 
-      }
-    })
-    showPwdModal.value = false
-    alert('Password berhasil diubah')
-  } catch (err) {
-    alert(err.data?.statusMessage || 'Gagal mengubah password')
-  } finally {
-    pwdSubmitting.value = false
-  }
+  navigateTo('/admin/profile')
 }
 
 const menuItems = [

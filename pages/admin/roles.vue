@@ -15,14 +15,14 @@
             </h5>
             <div class="d-flex align-items-center gap-2">
               <span class="badge bg-primary-soft text-primary">{{ role.permissions.length }} Izin</span>
-              <button 
+              <NuxtLink 
                 v-if="role.name !== 'ADMIN'"
+                :to="`/admin/roles/${role.id}/edit`"
                 class="btn btn-sm btn-icon border-0" 
-                title="Edit Izin" 
-                @click="openEditModal(role)"
+                title="Edit Izin"
               >
                 <i class="bi bi-pencil-square text-primary"></i>
-              </button>
+              </NuxtLink>
             </div>
           </div>
           <div class="card-body p-4">
@@ -40,57 +40,6 @@
               <span class="text-muted small">Belum ada izin yang dikonfigurasi.</span>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Edit Permissions Modal -->
-    <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
-      <div class="modal-content glass-card animate-zoom" style="max-width: 650px; padding: 20px;">
-        <div class="modal-header border-0 pb-0">
-          <div>
-            <h5 class="modal-title fw-bold mb-1">Pengaturan Izin Akses</h5>
-            <p class="text-muted small mb-0">Konfigurasi peran untuk <strong>{{ targetRole?.name }}</strong></p>
-          </div>
-          <button class="btn-close btn-close-white" @click="showEditModal = false"></button>
-        </div>
-        <div class="modal-body py-4">
-          <div class="mb-3 text-start">
-            <div class="row g-3">
-              <div v-for="res in availableResources" :key="res" class="col-md-6">
-                <div class="permission-item p-3 h-100 rounded-4 transition-all" 
-                     :class="hasPermission('MANAGE', res) ? 'bg-primary-soft border-primary' : 'bg-light-soft border-transparent'"
-                     style="border: 1px solid transparent; cursor: pointer;"
-                     @click="togglePermission('MANAGE', res)">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <div class="text-start">
-                      <div class="d-flex align-items-center gap-2 mb-1">
-                        <i class="bi fs-5" :class="getResourceIcon(res)"></i>
-                        <h6 class="mb-0 fw-bold">{{ res.replace('_', ' ') }}</h6>
-                      </div>
-                      <small class="text-muted" style="font-size: 10px;">Akses penuh ke modul ini</small>
-                    </div>
-                    <div class="form-check form-switch m-0">
-                      <input 
-                        class="form-check-input" 
-                        type="checkbox" 
-                        role="switch"
-                        :checked="hasPermission('MANAGE', res)" 
-                        @click.stop
-                        @change="togglePermission('MANAGE', res)"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer border-0 pt-0 gap-2">
-          <button type="button" class="btn btn-light rounded-4 px-4" @click="showEditModal = false">Batal</button>
-          <button type="button" class="btn btn-primary rounded-4 px-4 fw-bold" :disabled="saving" @click="savePermissions">
-            {{ saving ? 'Menyimpan...' : 'Simpan Konfigurasi' }}
-          </button>
         </div>
       </div>
     </div>
@@ -114,12 +63,6 @@ definePageMeta({ layout: 'admin', middleware: ['auth'] })
 
 const roles = ref([])
 const loading = ref(true)
-const showEditModal = ref(false)
-const targetRole = ref(null)
-const saving = ref(false)
-const selectedPermissions = ref([])
-
-const availableResources = ['USERS', 'WATER_POINTS', 'SETTINGS', 'GALLERY', 'LOGS', 'ROLES']
 
 const fetchRoles = async () => {
   try {
@@ -129,56 +72,6 @@ const fetchRoles = async () => {
   } finally {
     loading.value = false
   }
-}
-
-const openEditModal = (role) => {
-  targetRole.value = role
-  selectedPermissions.value = role.permissions.map(p => ({ action: p.action, resource: p.resource }))
-  showEditModal.value = true
-}
-
-const hasPermission = (action, resource) => {
-  return selectedPermissions.value.some(p => p.action === action && p.resource === resource)
-}
-
-const togglePermission = (action, resource) => {
-  const index = selectedPermissions.value.findIndex(p => p.action === action && p.resource === resource)
-  if (index > -1) {
-    selectedPermissions.value.splice(index, 1)
-  } else {
-    selectedPermissions.value.push({ action, resource })
-  }
-}
-
-const savePermissions = async () => {
-  saving.value = true
-  try {
-    await $fetch('/api/roles/permissions', {
-      method: 'POST',
-      body: { 
-        roleId: targetRole.value.id, 
-        permissions: selectedPermissions.value 
-      }
-    })
-    showEditModal.value = false
-    await fetchRoles()
-  } catch (err) {
-    alert(err.data?.statusMessage || 'Gagal menyimpan izin')
-  } finally {
-    saving.value = false
-  }
-}
-
-const getResourceIcon = (res) => {
-  const icons = {
-    'USERS': 'bi-people',
-    'WATER_POINTS': 'bi-droplet',
-    'SETTINGS': 'bi-gear',
-    'GALLERY': 'bi-images',
-    'LOGS': 'bi-journals',
-    'ROLES': 'bi-shield-check'
-  }
-  return icons[res] || 'bi-layers'
 }
 
 onMounted(fetchRoles)

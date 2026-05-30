@@ -49,12 +49,9 @@
                 <td>{{ formatDate(user.createdAt) }}</td>
                 <td>
                   <div class="btn-group gap-2">
-                    <button class="btn btn-icon text-info" title="Edit Profil" @click="openEditModal(user)">
+                    <NuxtLink :to="`/admin/users/${user.id}/edit`" class="btn btn-icon text-info" title="Edit & Reset Password">
                       <i class="bi bi-pencil-fill"></i>
-                    </button>
-                    <button class="btn btn-icon text-primary" title="Reset Password" @click="openResetModal(user)">
-                      <i class="bi bi-key-fill"></i>
-                    </button>
+                    </NuxtLink>
                     <button 
                       v-if="user.role !== 'ADMIN'"
                       class="btn btn-icon text-danger" 
@@ -77,11 +74,11 @@
       </div>
     </div>
 
-    <!-- Management Modal -->
+    <!-- Management Modal (Create Only) -->
     <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
       <div class="modal-content glass-card animate-zoom">
         <div class="modal-header border-0 pb-0">
-          <h5 class="modal-title">{{ editMode ? 'Edit Profil Pengguna' : 'Tambah Pengguna Baru' }}</h5>
+          <h5 class="modal-title">Tambah Pengguna Baru</h5>
           <button class="btn-close btn-close-white" @click="showModal = false"></button>
         </div>
         <form @submit.prevent="handleSubmit">
@@ -103,9 +100,9 @@
                 <label class="form-label">Jabatan</label>
                 <input v-model="form.position" type="text" class="form-control" />
               </div>
-              <div v-if="!editMode" class="col-12">
+              <div class="col-12">
                 <label class="form-label">Password</label>
-                <input v-model="form.password" type="password" class="form-control" :required="!editMode" />
+                <input v-model="form.password" type="password" class="form-control" required />
               </div>
               <div class="col-md-6">
                 <label class="form-label">Peran</label>
@@ -128,44 +125,8 @@
           <div class="modal-footer border-0 pt-0">
             <button type="button" class="btn btn-secondary" @click="showModal = false">Batal</button>
             <button type="submit" class="btn btn-primary" :disabled="submitting">
-              {{ submitting ? 'Memproses...' : (editMode ? 'Simpan Perubahan' : 'Tambah Pengguna') }}
+              {{ submitting ? 'Memproses...' : 'Tambah Pengguna' }}
             </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Reset Password Modal -->
-    <div v-if="showResetModal" class="modal-overlay" @click.self="showResetModal = false">
-      <div class="modal-content glass-card animate-zoom" style="max-width: 400px; padding: 20px;">
-        <div class="modal-header border-0 pb-0 text-center d-block">
-          <div class="mb-3">
-             <div class="mx-auto bg-primary-soft text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                <i class="bi bi-shield-lock-fill fs-2"></i>
-             </div>
-          </div>
-          <h5 class="modal-title fw-bold mb-1">Ubah Password</h5>
-          <p class="text-muted small mb-0">Reset akses untuk pengguna</p>
-        </div>
-        <form @submit.prevent="handleResetPassword">
-          <div class="modal-body py-4 text-center">
-            <div class="mb-4 p-3 bg-light-soft rounded-4">
-               <span class="badge bg-primary-soft text-primary mb-2">PENGGUNA</span>
-               <h6 class="fw-bold mb-0 text-dark">{{ targetUser?.fullName }}</h6>
-            </div>
-            <div class="text-start">
-              <label class="form-label">Password Baru</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light border-end-0"><i class="bi bi-key"></i></span>
-                <input v-model="newPassword" type="password" class="form-control border-start-0" placeholder="Min. 6 Karakter" required />
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer border-0 pt-0 gap-2 flex-column">
-            <button type="submit" class="btn btn-primary w-100 py-3 rounded-4 fw-bold" :disabled="submitting">
-              {{ submitting ? 'Mereset...' : 'Simpan Password Baru' }}
-            </button>
-            <button type="button" class="btn btn-white w-100" @click="showResetModal = false">Batal</button>
           </div>
         </form>
       </div>
@@ -180,12 +141,7 @@ const users = ref([])
 const roles = ref([])
 const loading = ref(true)
 const showModal = ref(false)
-const showResetModal = ref(false)
 const submitting = ref(false)
-const editMode = ref(false)
-const targetUserId = ref(null)
-const targetUser = ref(null)
-const newPassword = ref('')
 
 const form = ref({
   fullName: '', email: '', password: '', 
@@ -210,8 +166,6 @@ const fetchData = async () => {
 }
 
 const openModal = () => {
-  editMode.value = false
-  targetUserId.value = null
   form.value = {
     fullName: '', email: '', password: '', 
     institution: '', position: '',
@@ -221,61 +175,14 @@ const openModal = () => {
   showModal.value = true
 }
 
-const openEditModal = (user) => {
-  editMode.value = true
-  targetUserId.value = user.id
-  // Find the role ID by name
-  const role = roles.value.find(r => r.name === user.role)
-  
-  form.value = {
-    fullName: user.fullName,
-    email: user.email,
-    password: '', // Not used in edit
-    institution: user.institution || '',
-    position: user.position || '',
-    roleId: role ? role.id : '',
-    status: user.status
-  }
-  showModal.value = true
-}
-
-const openResetModal = (user) => {
-  targetUser.value = user
-  newPassword.value = ''
-  showResetModal.value = true
-}
-
 const handleSubmit = async () => {
   submitting.value = true
   try {
-    if (editMode.value) {
-      await $fetch(`/api/users/${targetUserId.value}`, {
-        method: 'PUT',
-        body: form.value
-      })
-    } else {
-      await $fetch('/api/users', { method: 'POST', body: form.value })
-    }
+    await $fetch('/api/users', { method: 'POST', body: form.value })
     showModal.value = false
     await fetchData()
   } catch (err) {
     alert(err.data?.statusMessage || 'Gagal menyimpan data')
-  } finally {
-    submitting.value = false
-  }
-}
-
-const handleResetPassword = async () => {
-  submitting.value = true
-  try {
-    await $fetch('/api/users/password', {
-      method: 'POST',
-      body: { userId: targetUser.value.id, newPassword: newPassword.value }
-    })
-    showResetModal.value = false
-    alert('Password berhasil direset')
-  } catch (err) {
-    alert('Gagal mereset password')
   } finally {
     submitting.value = false
   }
