@@ -167,3 +167,9 @@ model gallery_items {
 
   @@index([sort_order])
 }
+
+model sys_config {
+  id    Int    @id @default(autoincrement())
+  key   String @unique
+  value Json
+}
