@@ -45,8 +45,16 @@
                 </td>
                 <td>{{ formatDate(user.createdAt) }}</td>
                 <td>
-                  <div class="btn-group">
-                    <button class="btn btn-icon text-danger" @click="confirmDelete(user)">
+                  <div class="btn-group gap-2">
+                    <button class="btn btn-icon text-primary" title="Reset Password" @click="openResetModal(user)">
+                      <i class="bi bi-key-fill"></i>
+                    </button>
+                    <button 
+                      class="btn btn-icon text-danger" 
+                      :disabled="user.role === 'ADMIN'"
+                      :title="user.role === 'ADMIN' ? 'Admin tidak bisa dihapus' : 'Hapus Pengguna'" 
+                      @click="confirmDelete(user)"
+                    >
                       <i class="bi bi-trash"></i>
                     </button>
                   </div>
@@ -112,27 +120,47 @@
         </form>
       </div>
     </div>
+
+    <!-- Reset Password Modal -->
+    <div v-if="showResetModal" class="modal-overlay" @click.self="showResetModal = false">
+      <div class="modal-content glass-card animate-zoom" style="max-width: 400px;">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title">Reset Password</h5>
+          <button class="btn-close btn-close-white" @click="showResetModal = false"></button>
+        </div>
+        <form @submit.prevent="handleResetPassword">
+          <div class="modal-body py-4">
+            <div class="mb-3">
+              <label class="form-label">User: <strong>{{ targetUser?.fullName }}</strong></label>
+              <input v-model="newPassword" type="password" class="form-control" placeholder="Masukkan password baru" required />
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-secondary" @click="showResetModal = false">Batal</button>
+            <button type="submit" class="btn btn-primary" :disabled="submitting">
+              {{ submitting ? 'Mereset...' : 'Reset Password' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-definePageMeta({
-  layout: 'admin',
-  middleware: ['auth']
-})
+definePageMeta({ layout: 'admin', middleware: ['auth'] })
 
 const users = ref([])
 const roles = ref([])
 const loading = ref(true)
 const showModal = ref(false)
+const showResetModal = ref(false)
 const submitting = ref(false)
+const targetUser = ref(null)
+const newPassword = ref('')
 
 const form = ref({
-  fullName: '',
-  email: '',
-  password: '',
-  roleId: '',
-  status: 'ACTIVE'
+  fullName: '', email: '', password: '', roleId: '', status: 'ACTIVE'
 })
 
 const fetchData = async () => {
@@ -151,28 +179,45 @@ const fetchData = async () => {
   }
 }
 
-const openModal = (type) => {
+const openModal = () => {
   form.value = {
-    fullName: '',
-    email: '',
-    password: '',
-    roleId: roles.value[0]?.id || '',
+    fullName: '', email: '', password: '', 
+    roleId: roles.value.find(r => r.name !== 'ADMIN')?.id || roles.value[0]?.id || '',
     status: 'ACTIVE'
   }
   showModal.value = true
 }
 
+const openResetModal = (user) => {
+  targetUser.value = user
+  newPassword.value = ''
+  showResetModal.value = true
+}
+
 const handleSubmit = async () => {
   submitting.value = true
   try {
-    await $fetch('/api/users', {
-      method: 'POST',
-      body: form.value
-    })
+    await $fetch('/api/users', { method: 'POST', body: form.value })
     showModal.value = false
     await fetchData()
   } catch (err) {
     alert(err.data?.statusMessage || 'Gagal menyimpan data')
+  } finally {
+    submitting.value = false
+  }
+}
+
+const handleResetPassword = async () => {
+  submitting.value = true
+  try {
+    await $fetch('/api/users/password', {
+      method: 'POST',
+      body: { userId: targetUser.value.id, newPassword: newPassword.value }
+    })
+    showResetModal.value = false
+    alert('Password berhasil direset')
+  } catch (err) {
+    alert('Gagal mereset password')
   } finally {
     submitting.value = false
   }
@@ -184,7 +229,7 @@ const confirmDelete = async (user) => {
       await $fetch(`/api/users/${user.id}`, { method: 'DELETE' })
       await fetchData()
     } catch (err) {
-      alert('Gagal menghapus data')
+      alert(err.data?.statusMessage || 'Gagal menghapus data')
     }
   }
 }

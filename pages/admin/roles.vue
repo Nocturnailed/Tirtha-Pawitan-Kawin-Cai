@@ -13,7 +13,17 @@
               <i class="bi bi-shield-lock-fill me-2 text-primary"></i>
               {{ role.name }}
             </h5>
-            <span class="badge bg-primary-soft text-primary">{{ role.permissions.length }} Izin</span>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-primary-soft text-primary">{{ role.permissions.length }} Izin</span>
+              <button 
+                v-if="role.name !== 'ADMIN'"
+                class="btn btn-sm btn-icon border-0" 
+                title="Edit Izin" 
+                @click="openEditModal(role)"
+              >
+                <i class="bi bi-pencil-square text-primary"></i>
+              </button>
+            </div>
           </div>
           <div class="card-body p-4">
             <p class="text-muted small mb-4">{{ role.description || 'Tidak ada deskripsi peran.' }}</p>
@@ -34,13 +44,52 @@
       </div>
     </div>
 
+    <!-- Edit Permissions Modal -->
+    <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
+      <div class="modal-content glass-card animate-zoom" style="max-width: 500px;">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title">Edit Izin Role: <strong>{{ targetRole?.name }}</strong></h5>
+          <button class="btn-close btn-close-white" @click="showEditModal = false"></button>
+        </div>
+        <div class="modal-body py-4">
+          <div class="mb-3 text-start">
+            <p class="text-muted small mb-3">Pilih izin yang diberikan untuk peran ini:</p>
+            <div class="d-flex flex-column gap-3">
+              <div v-for="res in availableResources" :key="res" class="permission-item p-3 rounded-4 bg-light-soft">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="text-start">
+                    <h6 class="mb-0 fw-bold">{{ res }}</h6>
+                    <small class="text-muted">Kelola sumber daya {{ res.toLowerCase() }}</small>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input 
+                      class="form-check-input" 
+                      type="checkbox" 
+                      :checked="hasPermission('MANAGE', res)" 
+                      @change="togglePermission('MANAGE', res)"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-secondary" @click="showEditModal = false">Batal</button>
+          <button type="button" class="btn btn-primary" :disabled="saving" @click="savePermissions">
+            {{ saving ? 'Menyimpan...' : 'Simpan Perubahan' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="info-alert mt-5 p-4 rounded-4 bg-primary-soft">
       <div class="d-flex gap-3">
         <i class="bi bi-info-circle-fill text-primary fs-3"></i>
-        <div>
+        <div class="text-start">
           <h6 class="fw-bold mb-1">Catatan Keamanan</h6>
           <p class="text-muted small mb-0">
-            Perubahan pada izin akses memerlukan kehati-hatian tingkat tinggi. Saat ini, pengaturan izin dilakukan melalui sistem backend (Prisma) untuk menjaga integritas data kritikal. Hubungi administrator sistem jika memerlukan penyesuaian peran khusus.
+            Perubahan pada izin akses memerlukan kehati-hatian tingkat tinggi. Izin peran Administrator bersifat tetap dan tidak dapat diubah demi keamanan sistem. Hubungi bantuan teknis jika memerlukan penyesuaian khusus.
           </p>
         </div>
       </div>
@@ -53,6 +102,12 @@ definePageMeta({ layout: 'admin', middleware: ['auth'] })
 
 const roles = ref([])
 const loading = ref(true)
+const showEditModal = ref(false)
+const targetRole = ref(null)
+const saving = ref(false)
+const selectedPermissions = ref([])
+
+const availableResources = ['USERS', 'WATER_POINTS', 'SETTINGS', 'GALLERY', 'LOGS', 'ROLES']
 
 const fetchRoles = async () => {
   try {
@@ -61,6 +116,44 @@ const fetchRoles = async () => {
     console.error('Failed to fetch roles:', err)
   } finally {
     loading.value = false
+  }
+}
+
+const openEditModal = (role) => {
+  targetRole.value = role
+  selectedPermissions.value = role.permissions.map(p => ({ action: p.action, resource: p.resource }))
+  showEditModal.value = true
+}
+
+const hasPermission = (action, resource) => {
+  return selectedPermissions.value.some(p => p.action === action && p.resource === resource)
+}
+
+const togglePermission = (action, resource) => {
+  const index = selectedPermissions.value.findIndex(p => p.action === action && p.resource === resource)
+  if (index > -1) {
+    selectedPermissions.value.splice(index, 1)
+  } else {
+    selectedPermissions.value.push({ action, resource })
+  }
+}
+
+const savePermissions = async () => {
+  saving.value = true
+  try {
+    await $fetch('/api/roles/permissions', {
+      method: 'POST',
+      body: { 
+        roleId: targetRole.value.id, 
+        permissions: selectedPermissions.value 
+      }
+    })
+    showEditModal.value = false
+    await fetchRoles()
+  } catch (err) {
+    alert(err.data?.statusMessage || 'Gagal menyimpan izin')
+  } finally {
+    saving.value = false
   }
 }
 

@@ -106,6 +106,7 @@ export class AuthService {
             position: user.position,
             status: user.status,
             role: {
+                id: user.role.id,
                 name: user.role.name,
                 description: user.role.description,
                 permissions: user.role.permissions.map(p => ({
@@ -115,6 +116,11 @@ export class AuthService {
             },
             lastLoginAt: user.last_login_at
         }
+    }
+
+    async updatePassword(id: number, newPassword: string) {
+        const hashedPassword = await hashPassword(newPassword)
+        return await repo.updateUser(id, { password: hashedPassword })
     }
 }
 
