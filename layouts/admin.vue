@@ -71,6 +71,7 @@ const menuItems = [
   { label: 'Dashboard', path: '/admin/dashboard', icon: 'bi bi-grid-fill' },
   { label: 'Peta GIS', path: '/admin/gis', icon: 'bi bi-map-fill' },
   { label: 'Konfigurasi MQTT', path: '/admin/mqtt', icon: 'bi bi-broadcast' },
+  { label: 'Kontrol Akses', path: '/admin/roles', icon: 'bi bi-shield-lock-fill' },
   { label: 'Titik Air', path: '/admin/water-points', icon: 'bi bi-geo-alt-fill' },
   { label: 'Galeri', path: '/admin/gallery', icon: 'bi bi-images' },
   { label: 'Users', path: '/admin/users', icon: 'bi bi-people-fill' },
