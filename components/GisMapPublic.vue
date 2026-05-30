@@ -59,34 +59,34 @@ const updateTiles = (L, currentTheme) => {
 
 onMounted(async () => {
   if (process.client) {
-    const L = await import('leaflet')
-    
-    map = L.map('map-public', {
-      center: [-6.98, 108.48],
-      zoom: 11,
-      zoomControl: false
-    })
-
-    updateTiles(L, props.theme)
-
-    // Add Boundary
-    boundaryLayer = L.geoJSON(kuninganGeoJSON, {
-      style: {
-        color: props.theme === 'dark' ? '#38bdf8' : '#0ea5e9',
-        weight: 3,
-        fillColor: props.theme === 'dark' ? '#38bdf8' : '#0ea5e9',
-        fillOpacity: 0.05,
-        dashArray: '5, 8'
-      }
-    }).addTo(map)
-
-    L.control.zoom({ position: 'bottomright' }).addTo(map)
-
     try {
+      const L = await import('leaflet')
+      
+      map = L.map('map-public', {
+        center: [-6.98, 108.48],
+        zoom: 11,
+        zoomControl: false
+      })
+
+      updateTiles(L, props.theme)
+
+      // Add Boundary
+      boundaryLayer = L.geoJSON(kuninganGeoJSON, {
+        style: {
+          color: props.theme === 'dark' ? '#38bdf8' : '#0ea5e9',
+          weight: 3,
+          fillColor: props.theme === 'dark' ? '#38bdf8' : '#0ea5e9',
+          fillOpacity: 0.05,
+          dashArray: '5, 8'
+        }
+      }).addTo(map)
+
+      L.control.zoom({ position: 'bottomright' }).addTo(map)
+
       const points = await $fetch('/api/water-points')
       
       points.forEach(point => {
-        const marker = L.circleMarker([point.lat, point.lng], {
+        const marker = L.circleMarker([Number(point.lat), Number(point.lng)], {
           radius: 9,
           fillColor: point.status === 'Layak/Aman' ? '#10b981' : (point.status === 'Kritis' ? '#f43f5e' : '#f59e0b'),
           color: '#ffffff',
@@ -95,12 +95,12 @@ onMounted(async () => {
           fillOpacity: 0.9
         }).addTo(map)
 
-        marker.on('mouseover', function (e) {
+        marker.on('mouseover', function () {
           this.setStyle({ weight: 4, radius: 11 })
           this.openPopup()
         })
         
-        marker.on('mouseout', function (e) {
+        marker.on('mouseout', function () {
           this.setStyle({ weight: 2, radius: 9 })
         })
 
@@ -120,10 +120,10 @@ onMounted(async () => {
         markers.push(marker)
       })
     } catch (err) {
-      console.error('Failed to load points:', err)
+      console.error('Map init error:', err)
+    } finally {
+      loading.value = false
     }
-
-    loading.value = false
   }
 })
 

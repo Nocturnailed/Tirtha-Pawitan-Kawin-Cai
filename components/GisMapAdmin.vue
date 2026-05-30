@@ -62,7 +62,7 @@ const renderMarkers = (L) => {
   markers = []
 
   props.points.forEach(point => {
-    const marker = L.circleMarker([point.lat, point.lng], {
+    const marker = L.circleMarker([Number(point.lat), Number(point.lng)], {
       radius: 10,
       fillColor: point.status === 'Layak/Aman' ? '#10b981' : (point.status === 'Kritis' ? '#ef4444' : '#f59e0b'),
       color: '#ffffff',
@@ -81,29 +81,34 @@ const renderMarkers = (L) => {
 
 onMounted(async () => {
   if (process.client) {
-    const L = await import('leaflet')
-    
-    map = L.map('map-admin', {
-      center: [-6.98, 108.48],
-      zoom: 11,
-      zoomControl: false
-    })
+    try {
+      const L = await import('leaflet')
+      
+      map = L.map('map-admin', {
+        center: [-6.98, 108.48],
+        zoom: 11,
+        zoomControl: false
+      })
 
-    updateTiles(L, props.theme)
+      updateTiles(L, props.theme)
 
-    boundaryLayer = L.geoJSON(kuninganGeoJSON, {
-      style: {
-        color: props.theme === 'dark' ? '#38bdf8' : '#0ea5e9',
-        weight: 3,
-        fillColor: props.theme === 'dark' ? '#38bdf8' : '#0ea5e9',
-        fillOpacity: 0.05,
-        dashArray: '5, 8'
-      }
-    }).addTo(map)
+      boundaryLayer = L.geoJSON(kuninganGeoJSON, {
+        style: {
+          color: props.theme === 'dark' ? '#38bdf8' : '#0ea5e9',
+          weight: 3,
+          fillColor: props.theme === 'dark' ? '#38bdf8' : '#0ea5e9',
+          fillOpacity: 0.05,
+          dashArray: '5, 8'
+        }
+      }).addTo(map)
 
-    L.control.zoom({ position: 'bottomright' }).addTo(map)
-    renderMarkers(L)
-    loading.value = false
+      L.control.zoom({ position: 'bottomright' }).addTo(map)
+      renderMarkers(L)
+    } catch (err) {
+      console.error('Admin map init error:', err)
+    } finally {
+      loading.value = false
+    }
   }
 })
 

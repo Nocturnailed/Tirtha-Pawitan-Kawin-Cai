@@ -2,7 +2,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: false },
   modules: ['@pinia/nuxt'],
-  css: ['bootstrap/dist/css/bootstrap.css', 'bootstrap-icons/font/bootstrap-icons.css', '~/assets/styles/main.css'],
+  css: ['bootstrap/dist/css/bootstrap.css', 'bootstrap-icons/font/bootstrap-icons.css', 'leaflet/dist/leaflet.css', '~/assets/styles/main.css'],
   build: {
     transpile: ['bootstrap', 'leaflet', 'mqtt']
   },
