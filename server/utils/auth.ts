@@ -26,8 +26,13 @@ export const verifyPassword = async (password: string, stored: string): Promise<
     // Legacy bcrypt hashes — reject, they can't be verified without bcryptjs
     return false
   }
-  const [, iterStr, salt, origKey] = stored.split('$')
+  const parts = stored.split('$')
+  if (parts.length < 4) return false
+
+  const [, iterStr, salt, origKey] = parts
   const iterations = parseInt(iterStr, 10)
+  if (isNaN(iterations) || !salt || !origKey) return false
+
   const key = pbkdf2Sync(password, salt, iterations, KEY_LEN, 'sha512').toString('hex')
   return key === origKey
 }

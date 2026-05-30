@@ -199,43 +199,43 @@ onMounted(fetchData)
 </script>
 
 <style scoped>
-.admin-page { min-height: 100vh; background: #0f172a; }
-.page-title { color: #f8fafc; font-weight: 800; letter-spacing: -1px; }
+.admin-page { min-height: 100vh; }
+.page-title { color: var(--text); font-weight: 800; letter-spacing: -1px; }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
-.table { color: #cbd5e1; }
-.table thead th { background: rgba(255, 255, 255, 0.02); color: #94a3b8; padding: 16px; font-size: 12px; text-transform: uppercase; }
-.table tbody td { padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); vertical-align: middle; }
+.table { color: var(--text); }
+.table thead th { background: rgba(120, 120, 120, 0.02); color: var(--text-sub); padding: 18px 24px; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+.table tbody td { padding: 18px 24px; border-bottom: 1px solid var(--border); vertical-align: middle; }
 
 .user-avatar {
-  width: 36px; height: 36px; background: #38bdf8; color: white;
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; background: var(--primary); color: white;
+  border-radius: 10px; display: flex; align-items: center; justify-content: center;
   font-weight: 700; font-size: 14px;
 }
 
-.badge { padding: 6px 12px; border-radius: 8px; font-weight: 600; }
-.bg-primary-soft { background: rgba(56, 189, 248, 0.1); color: #38bdf8; }
-.bg-success-soft { background: rgba(52, 211, 153, 0.1); color: #34d399; }
-.bg-danger-soft { background: rgba(251, 113, 133, 0.1); color: #fb7185; }
+.badge { padding: 6px 14px; border-radius: 100px; font-size: 11px; font-weight: 700; }
+.bg-primary-soft { background: rgba(14, 165, 233, 0.1); color: #0ea5e9; }
+.bg-success-soft { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.bg-danger-soft { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 
-.btn-icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; color: #64748b; border-radius: 10px; transition: all 0.2s; }
-.btn-icon:hover { background: rgba(255, 255, 255, 0.1); color: #f8fafc; }
+.btn-icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; color: var(--text-sub); border-radius: 10px; transition: all 0.2s; border: 1px solid var(--border); background: var(--card-bg); }
+.btn-icon:hover { background: var(--nav-active); color: var(--primary); border-color: var(--primary); }
 
-.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(5px); }
-.modal-content { width: 600px; max-width: 95%; background: #1e293b; }
+.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(5px); }
+.modal-content { width: 600px; max-width: 95%; background: var(--card-bg); padding: 10px; }
 
-.form-label { color: #94a3b8; font-size: 13px; }
-.form-control, .form-select { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); color: white; border-radius: 10px; }
-.form-control:focus, .form-select:focus { background: rgba(15, 23, 42, 0.8); border-color: #38bdf8; }
+.form-label { color: var(--text-sub); font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.form-control, .form-select { background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 12px; padding: 12px; }
+.form-control:focus, .form-select:focus { background: var(--bg); border-color: var(--primary); color: var(--text); box-shadow: 0 0 0 3px var(--primary-soft); }
 
 .animate-fade-in { animation: fadeIn 0.5s ease; }
 .animate-zoom { animation: zoom 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes zoom { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+@keyframes zoom { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 </style>

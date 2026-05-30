@@ -250,34 +250,33 @@ onMounted(fetchData)
 <style scoped>
 .admin-page {
   min-height: 100vh;
-  background: #0f172a;
 }
 
 .page-title {
-  color: #f8fafc;
+  color: var(--text);
   font-weight: 800;
   letter-spacing: -1px;
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 .stat-card {
   display: flex;
   align-items: center;
-  padding: 20px;
+  padding: 24px;
   gap: 16px;
+  height: 100%;
 }
 
 .stat-icon {
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -286,51 +285,55 @@ onMounted(fetchData)
 }
 
 .stat-label {
-  color: #94a3b8;
-  font-size: 13px;
+  color: var(--text-sub);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .5px;
   margin: 0;
 }
 
 .stat-value {
-  color: #f8fafc;
+  color: var(--text);
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 800;
   margin: 0;
 }
 
 .table {
-  color: #cbd5e1;
+  color: var(--text);
 }
 
 .table thead th {
-  background: rgba(255, 255, 255, 0.02);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.05);
-  color: #94a3b8;
-  font-size: 12px;
+  background: rgba(120, 120, 120, 0.02);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-sub);
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 16px;
+  letter-spacing: 0.8px;
+  padding: 18px 24px;
 }
 
 .table tbody td {
-  padding: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border);
   vertical-align: middle;
 }
 
 .table-hover tbody tr:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--nav-active);
 }
 
 .badge {
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
 }
 
-.bg-success-soft { background: rgba(52, 211, 153, 0.1); color: #34d399; }
-.bg-danger-soft { background: rgba(251, 113, 133, 0.1); color: #fb7185; }
-.bg-warning-soft { background: rgba(251, 191, 36, 0.1); color: #fbbf24; }
+.bg-success-soft { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.bg-danger-soft { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+.bg-warning-soft { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
 
 .btn-icon {
   width: 36px;
@@ -339,51 +342,58 @@ onMounted(fetchData)
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #64748b;
+  color: var(--text-sub);
   border-radius: 10px;
   transition: all 0.2s;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
 }
 
 .btn-icon:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #f8fafc;
+  background: var(--nav-active);
+  color: var(--primary);
+  border-color: var(--primary);
 }
 
 /* Modal Styling */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 2000;
   backdrop-filter: blur(5px);
 }
 
 .modal-content {
-  width: 600px;
+  width: 650px;
   max-width: 95%;
-  background: #1e293b;
+  background: var(--card-bg);
+  padding: 10px;
 }
 
 .form-label {
-  color: #94a3b8;
+  color: var(--text-sub);
   font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
 }
 
 .form-control, .form-select {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-  border-radius: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 12px;
 }
 
 .form-control:focus, .form-select:focus {
-  background: rgba(15, 23, 42, 0.8);
-  border-color: #38bdf8;
-  color: white;
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+  background: var(--bg);
+  border-color: var(--primary);
+  color: var(--text);
+  box-shadow: 0 0 0 3px var(--primary-soft);
 }
 
 /* Animations */
@@ -391,5 +401,6 @@ onMounted(fetchData)
 .animate-zoom { animation: zoom 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes zoom { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+@keyframes zoom { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 </style>
+

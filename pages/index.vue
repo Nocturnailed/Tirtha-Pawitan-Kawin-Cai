@@ -179,7 +179,7 @@
         <div class="map-section-wrapper">
           <div class="map-main">
             <ClientOnly>
-              <GisMapPublic />
+              <GisMapPublic :theme="theme" />
             </ClientOnly>
           </div>
           <div class="map-sidebar">
@@ -213,21 +213,13 @@
           <p class="section-subtitle">Panorama sumber mata air yang dijaga oleh tradisi Kawin Cai</p>
         </div>
         <div class="gallery-grid">
-          <div class="gallery-item large">
-            <img src="https://images.unsplash.com/photo-1540331547168-8b63109225b7?auto=format&fit=crop&q=80&w=800" alt="Sumber Air" />
-            <div class="gallery-overlay"><span>Sumber Mata Air Alami</span></div>
+          <div v-for="(item, idx) in gallery" :key="item.id" 
+               :class="['gallery-item', { 'large': item.is_featured }]">
+            <img :src="item.image_url" :alt="item.title" />
+            <div class="gallery-overlay"><span>{{ item.title }}</span></div>
           </div>
-          <div class="gallery-item">
-            <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&q=80&w=600" alt="Pemandangan" />
-            <div class="gallery-overlay"><span>Lembah Kuningan</span></div>
-          </div>
-          <div class="gallery-item">
-            <img src="https://images.unsplash.com/photo-1432405972618-c6b0cfba1b3e?auto=format&fit=crop&q=80&w=600" alt="Hutan" />
-            <div class="gallery-overlay"><span>Hutan Lindung</span></div>
-          </div>
-          <div class="gallery-item">
-            <img src="https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&q=80&w=600" alt="Sungai" />
-            <div class="gallery-overlay"><span>Aliran Sungai Bersih</span></div>
+          <div v-if="gallery.length === 0" class="col-12 text-center py-5 text-muted">
+            Belum ada foto galeri.
           </div>
         </div>
       </div>
@@ -281,6 +273,7 @@ definePageMeta({ layout: false })
 
 const theme = ref('light')
 const stats = ref({ total: 0 })
+const gallery = ref([])
 
 const toggleTheme = () => {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
@@ -312,9 +305,15 @@ const benefits = [
 
 onMounted(async () => {
   try {
-    const data = await $fetch('/api/water-points/stats')
-    stats.value = data
-  } catch (e) {}
+    const [statsData, galleryData] = await Promise.all([
+      $fetch('/api/water-points/stats'),
+      $fetch('/api/gallery')
+    ])
+    stats.value = statsData
+    gallery.value = galleryData
+  } catch (e) {
+    console.error('Failed to initial fetch:', e)
+  }
 })
 </script>
 

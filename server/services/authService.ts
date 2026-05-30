@@ -5,11 +5,20 @@ const repo = new AuthRepository()
 
 export class AuthService {
     async login(email: string, password: string, ip?: string, userAgent?: string) {
-        const user = await repo.findByEmail(email)
-        if (!user) throw new Error('User not found')
+        const normalizedEmail = (email || '').trim().toLowerCase()
+        console.log(`[AUTH] Login attempt for: ${normalizedEmail}`)
+
+        const user = await repo.findByEmail(normalizedEmail)
+        if (!user) {
+            console.warn(`[AUTH] User not found: ${normalizedEmail}`)
+            throw new Error('User not found')
+        }
 
         const isValid = await verifyPassword(password, user.password)
-        if (!isValid) throw new Error('Invalid password')
+        if (!isValid) {
+            console.warn(`[AUTH] Invalid password for: ${normalizedEmail}`)
+            throw new Error('Invalid password')
+        }
 
         if (user.status !== 'ACTIVE') throw new Error('Account is not active')
 

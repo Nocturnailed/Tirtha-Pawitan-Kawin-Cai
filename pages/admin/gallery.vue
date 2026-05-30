@@ -149,37 +149,37 @@ onMounted(fetchGallery)
 </script>
 
 <style scoped>
-.admin-page { background: #0f172a; min-height: 100vh; color: #f8fafc; }
-.gallery-card { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); border-radius: 16px; overflow: hidden; transition: all .3s; }
-.gallery-card:hover { border-color: rgba(56,189,248,.3); transform: translateY(-4px); }
-.gallery-img-wrap { position: relative; height: 200px; overflow: hidden; }
+.admin-page { min-height: 100vh; }
+.gallery-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; transition: all .3s; }
+.gallery-card:hover { border-color: var(--primary); transform: translateY(-4px); }
+.gallery-img-wrap { position: relative; height: 200px; overflow: hidden; border-bottom: 1px solid var(--border); }
 .gallery-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
 .gallery-card:hover img { transform: scale(1.05); }
 .gallery-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; opacity: 0; transition: opacity .3s; }
 .gallery-card:hover .gallery-actions { opacity: 1; }
-.btn-sm-icon { width: 32px; height: 32px; border: none; border-radius: 8px; background: rgba(0,0,0,.6); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(4px); }
-.btn-sm-icon.danger:hover { background: #ef4444; }
-.btn-sm-icon:hover { background: #38bdf8; }
-.featured-badge { position: absolute; top: 10px; left: 10px; background: #f59e0b; color: #1e293b; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
-.gallery-info { padding: 14px; }
-.gallery-info h6 { font-size: 14px; font-weight: 700; margin: 0; }
-.gallery-info p { font-size: 12px; color: #94a3b8; margin: 4px 0 0; }
+.btn-sm-icon { width: 32px; height: 32px; border: 1px solid var(--border); border-radius: 8px; background: rgba(0,0,0,.6); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(4px); }
+.btn-sm-icon.danger:hover { background: var(--danger); border-color: var(--danger); }
+.btn-sm-icon:hover { background: var(--primary); border-color: var(--primary); }
+.featured-badge { position: absolute; top: 10px; left: 10px; background: #f59e0b; color: white; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+.gallery-info { padding: 18px; }
+.gallery-info h6 { font-size: 15px; font-weight: 700; margin: 0; color: var(--text); }
+.gallery-info p { font-size: 13px; color: var(--text-sub); margin: 6px 0 0; line-height: 1.5; }
 
 /* Modal */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.7); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(4px); }
-.modal-box { width: 500px; max-width: 95%; background: #1e293b; border: 1px solid rgba(255,255,255,.1); border-radius: 20px; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.7); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(5px); }
+.modal-box { width: 550px; max-width: 95%; background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px; padding: 10px; }
 .modal-header-custom { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px 0; }
-.modal-header-custom h5 { font-weight: 700; margin: 0; }
-.btn-close-custom { background: none; border: none; color: #64748b; font-size: 18px; cursor: pointer; }
+.modal-header-custom h5 { font-weight: 800; margin: 0; letter-spacing: -0.5px; color: var(--text); }
+.btn-close-custom { background: none; border: none; color: var(--text-sub); font-size: 20px; cursor: pointer; }
 .modal-body-custom { padding: 20px 24px; }
 .modal-footer-custom { padding: 0 24px 20px; display: flex; gap: 12px; justify-content: flex-end; }
-.form-label-custom { display: block; font-size: 13px; color: #94a3b8; font-weight: 600; margin-bottom: 6px; }
-.form-input { width: 100%; padding: 10px 14px; background: rgba(15,23,42,.6); border: 1px solid rgba(255,255,255,.1); border-radius: 10px; color: white; font-size: 14px; }
-.form-input:focus { outline: none; border-color: #38bdf8; }
-.img-preview { width: 100%; height: 150px; object-fit: cover; border-radius: 10px; border: 1px solid rgba(255,255,255,.1); }
-.form-check-custom { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #cbd5e1; cursor: pointer; }
-.form-check-custom input { width: 16px; height: 16px; accent-color: #38bdf8; }
-.btn-cancel { padding: 10px 20px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 10px; color: #94a3b8; cursor: pointer; }
-.btn-save { padding: 10px 24px; background: #0ea5e9; border: none; border-radius: 10px; color: white; font-weight: 600; cursor: pointer; }
+.form-label-custom { display: block; font-size: 13px; color: var(--text-sub); font-weight: 600; margin-bottom: 8px; }
+.form-input { width: 100%; padding: 12px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; color: var(--text); font-size: 14px; }
+.form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+.img-preview { width: 100%; height: 160px; object-fit: cover; border-radius: 14px; border: 1px solid var(--border); }
+.form-check-custom { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text-sub); cursor: pointer; font-weight: 500; }
+.form-check-custom input { width: 18px; height: 18px; accent-color: var(--primary); }
+.btn-cancel { padding: 12px 24px; background: transparent; border: 1px solid var(--border); border-radius: 12px; color: var(--text-sub); cursor: pointer; font-weight: 600; }
+.btn-save { padding: 12px 32px; background: var(--primary); border: none; border-radius: 12px; color: white; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px var(--primary-soft); }
 .btn-save:disabled { opacity: .6; }
 </style>

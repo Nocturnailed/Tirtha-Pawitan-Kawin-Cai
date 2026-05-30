@@ -157,44 +157,43 @@ onMounted(fetchData)
 
 // Refresh data when switching tabs might be good
 watch(activeTab, () => {
-  // fetchData() // Uncomment to auto-refresh on tab change
 })
 </script>
 
 <style scoped>
-.admin-page { min-height: 100vh; background: #0f172a; }
-.page-title { color: #f8fafc; font-weight: 800; letter-spacing: -1px; }
+.admin-page { min-height: 100vh; }
+.page-title { color: var(--text); font-weight: 800; letter-spacing: -1px; }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
 }
 
 .btn-tab {
   padding: 8px 16px;
   border-radius: 10px;
-  color: #94a3b8;
+  color: var(--text-sub);
   border: none;
   font-weight: 600;
   transition: all 0.3s;
+  background: transparent;
 }
 
-.btn-tab:hover { background: rgba(255, 255, 255, 0.05); color: #f8fafc; }
-.btn-tab.active { background: #38bdf8; color: white; box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3); }
+.btn-tab:hover { background: var(--nav-active); color: var(--text); }
+.btn-tab.active { background: var(--primary); color: white; }
 
-.table { color: #cbd5e1; font-size: 14px; }
-.table thead th { background: rgba(255, 255, 255, 0.02); color: #94a3b8; padding: 16px; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-.table tbody td { padding: 14px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); vertical-align: middle; }
+.table { color: var(--text); font-size: 14px; }
+.table thead th { background: var(--bg); color: var(--text-sub); padding: 16px 24px; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+.table tbody td { padding: 14px 24px; border-bottom: 1px solid var(--border); vertical-align: middle; }
 
-code { background: rgba(15, 23, 42, 0.5); padding: 4px 8px; border-radius: 6px; color: #38bdf8; }
+code { background: var(--bg); padding: 4px 8px; border-radius: 6px; color: var(--primary); border: 1px solid var(--border); font-size: 12px; }
 
-.badge { padding: 5px 10px; border-radius: 6px; font-weight: 600; font-size: 11px; }
-.bg-primary-soft { background: rgba(56, 189, 248, 0.1); color: #38bdf8; }
-.bg-info-soft { background: rgba(14, 165, 233, 0.1); color: #0ea5e9; }
-.bg-warning-soft { background: rgba(251, 191, 36, 0.1); color: #fbbf24; }
-.bg-success-soft { background: rgba(52, 211, 153, 0.1); color: #34d399; }
+.badge { padding: 6px 12px; border-radius: 100px; font-weight: 700; font-size: 11px; }
+.bg-primary-soft { background: var(--primary-soft); color: var(--primary); }
+.bg-info-soft { background: var(--info-soft); color: var(--info); }
+.bg-warning-soft { background: var(--warning-soft); color: var(--warning); }
+.bg-success-soft { background: var(--success-soft); color: var(--success); }
 
 .animate-fade-in { animation: fadeIn 0.4s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
