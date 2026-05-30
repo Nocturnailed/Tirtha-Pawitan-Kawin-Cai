@@ -140,7 +140,24 @@ async function main() {
     }
     console.log('✅ Audit log seeded')
 
+    // 7. Seed Gallery
+    const galleryItems = [
+        { title: 'Sumber Mata Air Alami', image_url: 'https://images.unsplash.com/photo-1540331547168-8b63109225b7?auto=format&fit=crop&q=80&w=800', caption: 'Keindahan mata air alami di Kuningan', is_featured: true, sort_order: 1 },
+        { title: 'Lembah Kuningan', image_url: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&q=80&w=600', caption: 'Panorama lembah hijau Kabupaten Kuningan', sort_order: 2 },
+        { title: 'Hutan Lindung', image_url: 'https://images.unsplash.com/photo-1432405972618-c6b0cfba1b3e?auto=format&fit=crop&q=80&w=600', caption: 'Kawasan hutan lindung pelindung mata air', sort_order: 3 },
+        { title: 'Aliran Sungai Bersih', image_url: 'https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&q=80&w=600', caption: 'Aliran sungai jernih dari sumber mata air', sort_order: 4 },
+    ]
+
+    for (const gi of galleryItems) {
+        const existing = await prisma.gallery_items.findFirst({ where: { title: gi.title } })
+        if (!existing) {
+            await prisma.gallery_items.create({ data: gi })
+        }
+    }
+    console.log('✅ Gallery seeded')
+
     console.log('\n🎉 Seeding complete!')
+
 }
 
 main()

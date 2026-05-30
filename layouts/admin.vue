@@ -46,11 +46,13 @@ const user = ref(null)
 const loading = ref(true)
 
 const menuItems = [
-  { label: 'Admin Dashboard', path: '/admin/dashboard', icon: 'bi bi-grid-fill', permission: 'READ_WATER_POINTS' },
-  { label: 'Water Points', path: '/admin/water-points', icon: 'bi bi-geo-alt-fill', permission: 'MANAGE_WATER_POINTS' },
+  { label: 'Dashboard', path: '/admin/dashboard', icon: 'bi bi-grid-fill', permission: 'READ_WATER_POINTS' },
+  { label: 'Titik Air', path: '/admin/water-points', icon: 'bi bi-geo-alt-fill', permission: 'MANAGE_WATER_POINTS' },
+  { label: 'Galeri', path: '/admin/gallery', icon: 'bi bi-images', permission: 'MANAGE_WATER_POINTS' },
   { label: 'Users', path: '/admin/users', icon: 'bi bi-people-fill', permission: 'MANAGE_USERS' },
   { label: 'Logs', path: '/admin/logs', icon: 'bi bi-journal-text', permission: 'MANAGE_LOGS' }
 ]
+
 
 
 const filteredMenu = computed(() => {
