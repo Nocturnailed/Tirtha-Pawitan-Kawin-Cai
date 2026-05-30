@@ -56,9 +56,9 @@
                       <i class="bi bi-key-fill"></i>
                     </button>
                     <button 
+                      v-if="user.role !== 'ADMIN'"
                       class="btn btn-icon text-danger" 
-                      :disabled="user.role === 'ADMIN'"
-                      :title="user.role === 'ADMIN' ? 'Admin tidak bisa dihapus' : 'Hapus Pengguna'" 
+                      title="Hapus Pengguna" 
                       @click="confirmDelete(user)"
                     >
                       <i class="bi bi-trash"></i>
@@ -137,23 +137,35 @@
 
     <!-- Reset Password Modal -->
     <div v-if="showResetModal" class="modal-overlay" @click.self="showResetModal = false">
-      <div class="modal-content glass-card animate-zoom" style="max-width: 400px;">
-        <div class="modal-header border-0 pb-0">
-          <h5 class="modal-title">Reset Password</h5>
-          <button class="btn-close btn-close-white" @click="showResetModal = false"></button>
+      <div class="modal-content glass-card animate-zoom" style="max-width: 400px; padding: 20px;">
+        <div class="modal-header border-0 pb-0 text-center d-block">
+          <div class="mb-3">
+             <div class="mx-auto bg-primary-soft text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                <i class="bi bi-shield-lock-fill fs-2"></i>
+             </div>
+          </div>
+          <h5 class="modal-title fw-bold mb-1">Ubah Password</h5>
+          <p class="text-muted small mb-0">Reset akses untuk pengguna</p>
         </div>
         <form @submit.prevent="handleResetPassword">
-          <div class="modal-body py-4">
-            <div class="mb-3">
-              <label class="form-label">User: <strong>{{ targetUser?.fullName }}</strong></label>
-              <input v-model="newPassword" type="password" class="form-control" placeholder="Masukkan password baru" required />
+          <div class="modal-body py-4 text-center">
+            <div class="mb-4 p-3 bg-light-soft rounded-4">
+               <span class="badge bg-primary-soft text-primary mb-2">PENGGUNA</span>
+               <h6 class="fw-bold mb-0 text-dark">{{ targetUser?.fullName }}</h6>
+            </div>
+            <div class="text-start">
+              <label class="form-label">Password Baru</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-key"></i></span>
+                <input v-model="newPassword" type="password" class="form-control border-start-0" placeholder="Min. 6 Karakter" required />
+              </div>
             </div>
           </div>
-          <div class="modal-footer border-0 pt-0">
-            <button type="button" class="btn btn-secondary" @click="showResetModal = false">Batal</button>
-            <button type="submit" class="btn btn-primary" :disabled="submitting">
-              {{ submitting ? 'Mereset...' : 'Reset Password' }}
+          <div class="modal-footer border-0 pt-0 gap-2 flex-column">
+            <button type="submit" class="btn btn-primary w-100 py-3 rounded-4 fw-bold" :disabled="submitting">
+              {{ submitting ? 'Mereset...' : 'Simpan Password Baru' }}
             </button>
+            <button type="button" class="btn btn-white w-100" @click="showResetModal = false">Batal</button>
           </div>
         </form>
       </div>

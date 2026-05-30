@@ -46,38 +46,50 @@
 
     <!-- Edit Permissions Modal -->
     <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
-      <div class="modal-content glass-card animate-zoom" style="max-width: 500px;">
+      <div class="modal-content glass-card animate-zoom" style="max-width: 650px; padding: 20px;">
         <div class="modal-header border-0 pb-0">
-          <h5 class="modal-title">Edit Izin Role: <strong>{{ targetRole?.name }}</strong></h5>
+          <div>
+            <h5 class="modal-title fw-bold mb-1">Pengaturan Izin Akses</h5>
+            <p class="text-muted small mb-0">Konfigurasi peran untuk <strong>{{ targetRole?.name }}</strong></p>
+          </div>
           <button class="btn-close btn-close-white" @click="showEditModal = false"></button>
         </div>
         <div class="modal-body py-4">
           <div class="mb-3 text-start">
-            <p class="text-muted small mb-3">Pilih izin yang diberikan untuk peran ini:</p>
-            <div class="d-flex flex-column gap-3">
-              <div v-for="res in availableResources" :key="res" class="permission-item p-3 rounded-4 bg-light-soft">
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="text-start">
-                    <h6 class="mb-0 fw-bold">{{ res }}</h6>
-                    <small class="text-muted">Kelola sumber daya {{ res.toLowerCase() }}</small>
-                  </div>
-                  <div class="form-check form-switch">
-                    <input 
-                      class="form-check-input" 
-                      type="checkbox" 
-                      :checked="hasPermission('MANAGE', res)" 
-                      @change="togglePermission('MANAGE', res)"
-                    />
+            <div class="row g-3">
+              <div v-for="res in availableResources" :key="res" class="col-md-6">
+                <div class="permission-item p-3 h-100 rounded-4 transition-all" 
+                     :class="hasPermission('MANAGE', res) ? 'bg-primary-soft border-primary' : 'bg-light-soft border-transparent'"
+                     style="border: 1px solid transparent; cursor: pointer;"
+                     @click="togglePermission('MANAGE', res)">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div class="text-start">
+                      <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi fs-5" :class="getResourceIcon(res)"></i>
+                        <h6 class="mb-0 fw-bold">{{ res.replace('_', ' ') }}</h6>
+                      </div>
+                      <small class="text-muted" style="font-size: 10px;">Akses penuh ke modul ini</small>
+                    </div>
+                    <div class="form-check form-switch m-0">
+                      <input 
+                        class="form-check-input" 
+                        type="checkbox" 
+                        role="switch"
+                        :checked="hasPermission('MANAGE', res)" 
+                        @click.stop
+                        @change="togglePermission('MANAGE', res)"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="modal-footer border-0 pt-0">
-          <button type="button" class="btn btn-secondary" @click="showEditModal = false">Batal</button>
-          <button type="button" class="btn btn-primary" :disabled="saving" @click="savePermissions">
-            {{ saving ? 'Menyimpan...' : 'Simpan Perubahan' }}
+        <div class="modal-footer border-0 pt-0 gap-2">
+          <button type="button" class="btn btn-light rounded-4 px-4" @click="showEditModal = false">Batal</button>
+          <button type="button" class="btn btn-primary rounded-4 px-4 fw-bold" :disabled="saving" @click="savePermissions">
+            {{ saving ? 'Menyimpan...' : 'Simpan Konfigurasi' }}
           </button>
         </div>
       </div>
@@ -157,6 +169,18 @@ const savePermissions = async () => {
   }
 }
 
+const getResourceIcon = (res) => {
+  const icons = {
+    'USERS': 'bi-people',
+    'WATER_POINTS': 'bi-droplet',
+    'SETTINGS': 'bi-gear',
+    'GALLERY': 'bi-images',
+    'LOGS': 'bi-journals',
+    'ROLES': 'bi-shield-check'
+  }
+  return icons[res] || 'bi-layers'
+}
+
 onMounted(fetchRoles)
 </script>
 
@@ -179,7 +203,11 @@ onMounted(fetchRoles)
 .perm-tag .resource { padding: 4px 8px; color: var(--text); }
 
 .bg-light-soft { background: var(--bg); border: 1px dashed var(--border); }
+.border-primary { border-color: var(--primary) !important; }
+.transition-all { transition: all 0.2s ease-in-out; }
 
 .animate-fade-in { animation: fadeIn 0.5s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.animate-zoom { animation: zoom 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes zoom { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 </style>
