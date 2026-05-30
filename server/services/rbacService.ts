@@ -18,4 +18,8 @@ export class RbacService {
         const role = await repo.findRoleByName(roleName)
         return role?.permissions || []
     }
+
+    async getAllRoles() {
+        return await repo.findAllRoles()
+    }
 }
