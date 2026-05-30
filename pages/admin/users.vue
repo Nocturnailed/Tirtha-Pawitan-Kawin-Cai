@@ -31,7 +31,10 @@
                     <div class="user-avatar me-3">
                       {{ user.fullName.charAt(0) }}
                     </div>
-                    <span class="fw-bold">{{ user.fullName }}</span>
+                    <div>
+                        <span class="fw-bold d-block">{{ user.fullName }}</span>
+                        <small class="text-muted">{{ user.institution || '-' }}</small>
+                    </div>
                   </div>
                 </td>
                 <td>{{ user.email }}</td>
@@ -46,6 +49,9 @@
                 <td>{{ formatDate(user.createdAt) }}</td>
                 <td>
                   <div class="btn-group gap-2">
+                    <button class="btn btn-icon text-info" title="Edit Profil" @click="openEditModal(user)">
+                      <i class="bi bi-pencil-fill"></i>
+                    </button>
                     <button class="btn btn-icon text-primary" title="Reset Password" @click="openResetModal(user)">
                       <i class="bi bi-key-fill"></i>
                     </button>
@@ -75,13 +81,13 @@
     <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
       <div class="modal-content glass-card animate-zoom">
         <div class="modal-header border-0 pb-0">
-          <h5 class="modal-title">Tambah Pengguna Baru</h5>
+          <h5 class="modal-title">{{ editMode ? 'Edit Profil Pengguna' : 'Tambah Pengguna Baru' }}</h5>
           <button class="btn-close btn-close-white" @click="showModal = false"></button>
         </div>
         <form @submit.prevent="handleSubmit">
           <div class="modal-body py-4">
             <div class="row g-3">
-              <div class="col-12">
+              <div class="col-md-6">
                 <label class="form-label">Nama Lengkap</label>
                 <input v-model="form.fullName" type="text" class="form-control" required />
               </div>
@@ -90,8 +96,16 @@
                 <input v-model="form.email" type="email" class="form-control" required />
               </div>
               <div class="col-md-6">
+                <label class="form-label">Institusi</label>
+                <input v-model="form.institution" type="text" class="form-control" placeholder="ex: UTB" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Jabatan</label>
+                <input v-model="form.position" type="text" class="form-control" />
+              </div>
+              <div v-if="!editMode" class="col-12">
                 <label class="form-label">Password</label>
-                <input v-model="form.password" type="password" class="form-control" required />
+                <input v-model="form.password" type="password" class="form-control" :required="!editMode" />
               </div>
               <div class="col-md-6">
                 <label class="form-label">Peran</label>
@@ -114,7 +128,7 @@
           <div class="modal-footer border-0 pt-0">
             <button type="button" class="btn btn-secondary" @click="showModal = false">Batal</button>
             <button type="submit" class="btn btn-primary" :disabled="submitting">
-              {{ submitting ? 'Menyimpan...' : 'Simpan Pengguna' }}
+              {{ submitting ? 'Memproses...' : (editMode ? 'Simpan Perubahan' : 'Tambah Pengguna') }}
             </button>
           </div>
         </form>
@@ -156,11 +170,15 @@ const loading = ref(true)
 const showModal = ref(false)
 const showResetModal = ref(false)
 const submitting = ref(false)
+const editMode = ref(false)
+const targetUserId = ref(null)
 const targetUser = ref(null)
 const newPassword = ref('')
 
 const form = ref({
-  fullName: '', email: '', password: '', roleId: '', status: 'ACTIVE'
+  fullName: '', email: '', password: '', 
+  institution: '', position: '',
+  roleId: '', status: 'ACTIVE'
 })
 
 const fetchData = async () => {
@@ -180,10 +198,31 @@ const fetchData = async () => {
 }
 
 const openModal = () => {
+  editMode.value = false
+  targetUserId.value = null
   form.value = {
     fullName: '', email: '', password: '', 
+    institution: '', position: '',
     roleId: roles.value.find(r => r.name !== 'ADMIN')?.id || roles.value[0]?.id || '',
     status: 'ACTIVE'
+  }
+  showModal.value = true
+}
+
+const openEditModal = (user) => {
+  editMode.value = true
+  targetUserId.value = user.id
+  // Find the role ID by name
+  const role = roles.value.find(r => r.name === user.role)
+  
+  form.value = {
+    fullName: user.fullName,
+    email: user.email,
+    password: '', // Not used in edit
+    institution: user.institution || '',
+    position: user.position || '',
+    roleId: role ? role.id : '',
+    status: user.status
   }
   showModal.value = true
 }
@@ -197,7 +236,14 @@ const openResetModal = (user) => {
 const handleSubmit = async () => {
   submitting.value = true
   try {
-    await $fetch('/api/users', { method: 'POST', body: form.value })
+    if (editMode.value) {
+      await $fetch(`/api/users/${targetUserId.value}`, {
+        method: 'PUT',
+        body: form.value
+      })
+    } else {
+      await $fetch('/api/users', { method: 'POST', body: form.value })
+    }
     showModal.value = false
     await fetchData()
   } catch (err) {

@@ -1,6 +1,7 @@
 import { AuthService } from '../../services/authService'
 import { getAuthenticatedUser } from '../../utils/auth'
 import { checkPermission } from '../../utils/rbac'
+import { db } from '../../utils/database'
 
 const authService = new AuthService()
 
@@ -27,6 +28,35 @@ export default defineEventHandler(async (event) => {
         }
 
         return await authService.deleteUser(id)
+    }
+
+    if (method === 'PUT') {
+        const body = await readBody(event)
+        const { fullName, email, institution, position, roleId, status } = body
+
+        const updatedUser = await db.auth_users.update({
+            where: { id },
+            data: {
+                full_name: fullName,
+                email: email,
+                institution: institution,
+                position: position,
+                role_id: roleId,
+                status: status || 'ACTIVE'
+            },
+            include: { role: true }
+        })
+
+        return {
+            message: 'Data pengguna berhasil diperbarui',
+            user: {
+                id: updatedUser.id,
+                email: updatedUser.email,
+                fullName: updatedUser.full_name,
+                role: updatedUser.role.name,
+                status: updatedUser.status
+            }
+        }
     }
 
     throw createError({ statusCode: 405, statusMessage: 'Method not allowed' })

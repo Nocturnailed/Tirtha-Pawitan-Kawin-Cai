@@ -1,7 +1,7 @@
 <template>
   <div :class="['landing', theme]">
     <!-- Navbar -->
-    <nav class="navbar">
+    <nav class="navbar" :class="{ scrolled: isScrolled }">
       <div class="nav-container">
         <NuxtLink to="/" class="nav-brand">
           <i class="bi bi-droplet-fill"></i>
@@ -16,15 +16,50 @@
           <a href="#galeri">Galeri</a>
         </div>
         <div class="nav-actions">
-          <button class="theme-toggle" @click="toggleTheme" :title="theme === 'light' ? 'Mode Gelap' : 'Mode Terang'">
+          <button class="theme-toggle d-none d-sm-flex" @click="toggleTheme" :title="theme === 'light' ? 'Mode Gelap' : 'Mode Terang'">
             <i :class="theme === 'light' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill'"></i>
           </button>
-          <NuxtLink to="/login" class="btn-login">
+          <NuxtLink to="/login" class="btn-login d-none d-sm-flex">
             <i class="bi bi-box-arrow-in-right me-2"></i>Masuk
           </NuxtLink>
+          <button class="mobile-toggle d-lg-none" @click="toggleMobileMenu" aria-label="Menu">
+            <i class="bi" :class="showMobileMenu ? 'bi-x-lg' : 'bi-list'"></i>
+          </button>
         </div>
       </div>
     </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <Transition name="fade">
+      <div v-if="showMobileMenu" class="mobile-menu-overlay d-lg-none" @click="closeMobileMenu">
+        <div class="mobile-menu-content" @click.stop>
+          <div class="mobile-menu-header">
+            <NuxtLink to="/" class="nav-brand" @click="closeMobileMenu">
+              <i class="bi bi-droplet-fill"></i>
+              <span>Tirtha Pawitan</span>
+            </NuxtLink>
+            <button class="close-btn" @click="closeMobileMenu"><i class="bi bi-x-lg"></i></button>
+          </div>
+          <div class="mobile-links">
+            <a href="#tentang" @click="closeMobileMenu">Tentang</a>
+            <a href="#tradisi" @click="closeMobileMenu">Tradisi</a>
+            <a href="#proses" @click="closeMobileMenu">Proses</a>
+            <a href="#peta" @click="closeMobileMenu">Peta GIS</a>
+            <a href="#manfaat" @click="closeMobileMenu">Manfaat</a>
+            <a href="#galeri" @click="closeMobileMenu">Galeri</a>
+          </div>
+          <div class="mobile-actions">
+            <button class="theme-toggle w-100 mb-3" @click="toggleTheme">
+              <i :class="theme === 'light' ? 'bi bi-moon-stars-fill me-2' : 'bi bi-sun-fill me-2'"></i>
+              {{ theme === 'light' ? 'Mode Gelap' : 'Mode Terang' }}
+            </button>
+            <NuxtLink to="/login" class="btn-login w-100" @click="closeMobileMenu">
+              <i class="bi bi-box-arrow-in-right me-2"></i>Masuk ke Sistem
+            </NuxtLink>
+          </div>
+        </div>
+      </div>
+    </Transition>
 
     <!-- Hero -->
     <header class="hero">
@@ -33,16 +68,19 @@
         <div class="shape shape-2"></div>
         <div class="shape shape-3"></div>
       </div>
+      <div class="sunda-decoration" style="top: 10%; left: 5%;"></div>
+      <div class="sunda-decoration" style="bottom: 10%; right: 5%;"></div>
+      
       <div class="hero-content">
-        <div class="hero-badge">
-          <span class="dot"></span> Kearifan Lokal Sunda
+        <div class="hero-badge reveal">
+          <span class="dot"></span> Kearifan Lokal Sunda Kuningan
         </div>
-        <h1>Melestarikan Air,<br/><span class="highlight">Menjaga Kehidupan.</span></h1>
-        <p class="hero-desc">
+        <h1 class="reveal">Melestarikan Air,<br/><span class="highlight">Menjaga Kehidupan.</span></h1>
+        <p class="hero-desc reveal">
           <strong>Kawin Cai</strong> adalah tradisi leluhur masyarakat Sunda dalam menjaga 
           keberlangsungan sumber mata air melalui harmoni antara manusia dan alam.
         </p>
-        <div class="hero-cta">
+        <div class="hero-cta reveal">
           <a href="#tentang" class="btn-primary-cta">
             <i class="bi bi-arrow-down-circle me-2"></i>Pelajari Lebih Lanjut
           </a>
@@ -50,7 +88,7 @@
             <i class="bi bi-images me-2"></i>Lihat Galeri
           </a>
         </div>
-        <div class="hero-stats">
+        <div class="hero-stats reveal">
           <div class="stat-item">
             <div class="stat-number">{{ stats.total || 8 }}</div>
             <div class="stat-label">Titik Mata Air</div>
@@ -72,13 +110,13 @@
     <!-- Tentang Section -->
     <section id="tentang" class="section">
       <div class="section-container">
-        <div class="section-header">
+        <div class="section-header reveal">
           <span class="section-tag">Tentang</span>
           <h2>Apa itu <span class="highlight">Kawin Cai</span>?</h2>
           <p class="section-subtitle">Filosofi air yang menyatukan alam dan budaya Sunda</p>
         </div>
         <div class="about-grid">
-          <div class="about-card main-card">
+          <div class="about-card main-card reveal">
             <div class="about-icon"><i class="bi bi-water"></i></div>
             <h3>Pernikahan Air</h3>
             <p>
@@ -94,12 +132,12 @@
             </p>
           </div>
           <div class="about-side">
-            <div class="about-card">
+            <div class="about-card reveal">
               <div class="about-icon small-icon"><i class="bi bi-geo-alt-fill"></i></div>
               <h4>Kabupaten Kuningan</h4>
               <p>Tradisi ini berkembang di kawasan Kuningan yang dikenal sebagai "Kota Kuda" dan kaya akan sumber mata air alami.</p>
             </div>
-            <div class="about-card">
+            <div class="about-card reveal">
               <div class="about-icon small-icon"><i class="bi bi-calendar-heart"></i></div>
               <h4>Dilakukan Berkala</h4>
               <p>Upacara Kawin Cai dilaksanakan setiap tahun atau saat kondisi tertentu sebagai bentuk syukur dan permohonan kepada alam.</p>
@@ -112,13 +150,13 @@
     <!-- Tradisi Section -->
     <section id="tradisi" class="section section-alt">
       <div class="section-container">
-        <div class="section-header">
+        <div class="section-header reveal">
           <span class="section-tag">Tradisi</span>
           <h2>Makna Spiritual & <span class="highlight">Budaya</span></h2>
           <p class="section-subtitle">Setiap elemen dalam Kawin Cai memiliki makna mendalam</p>
         </div>
         <div class="tradition-grid">
-          <div class="tradition-card" v-for="(item, idx) in traditions" :key="idx">
+          <div class="tradition-card reveal" v-for="(item, idx) in traditions" :key="idx">
             <div class="tradition-number">{{ String(idx + 1).padStart(2, '0') }}</div>
             <div class="tradition-icon"><i :class="item.icon"></i></div>
             <h4>{{ item.title }}</h4>
@@ -131,13 +169,13 @@
     <!-- Proses Section -->
     <section id="proses" class="section">
       <div class="section-container">
-        <div class="section-header">
+        <div class="section-header reveal">
           <span class="section-tag">Proses</span>
           <h2>Tahapan <span class="highlight">Upacara</span></h2>
           <p class="section-subtitle">Rangkaian prosesi sakral Kawin Cai</p>
         </div>
         <div class="timeline">
-          <div class="timeline-item" v-for="(step, idx) in processSteps" :key="idx" :class="{ reverse: idx % 2 !== 0 }">
+          <div class="timeline-item reveal" v-for="(step, idx) in processSteps" :key="idx" :class="{ reverse: idx % 2 !== 0 }">
             <div class="timeline-dot">
               <span>{{ idx + 1 }}</span>
             </div>
@@ -153,13 +191,13 @@
     <!-- Manfaat Section -->
     <section id="manfaat" class="section section-alt">
       <div class="section-container">
-        <div class="section-header">
+        <div class="section-header reveal">
           <span class="section-tag">Manfaat</span>
           <h2>Dampak Positif <span class="highlight">Kawin Cai</span></h2>
           <p class="section-subtitle">Bukan hanya tradisi, tapi aksi nyata pelestarian alam</p>
         </div>
         <div class="benefit-grid">
-          <div class="benefit-card" v-for="(b, idx) in benefits" :key="idx">
+          <div class="benefit-card reveal" v-for="(b, idx) in benefits" :key="idx">
             <div class="benefit-icon"><i :class="b.icon"></i></div>
             <h4>{{ b.title }}</h4>
             <p>{{ b.desc }}</p>
@@ -171,12 +209,12 @@
     <!-- Peta GIS Section -->
     <section id="peta" class="section">
       <div class="section-container">
-        <div class="section-header">
+        <div class="section-header reveal">
           <span class="section-tag">Peta</span>
           <h2>Sebaran <span class="highlight">Titik Mata Air</span></h2>
           <p class="section-subtitle">Lokasi sumber mata air yang terpantau di Kabupaten Kuningan</p>
         </div>
-        <div class="map-section-wrapper">
+        <div class="map-section-wrapper reveal">
           <div class="map-main">
             <ClientOnly>
               <GisMapPublic :theme="theme" />
@@ -207,16 +245,20 @@
     <!-- Galeri Section -->
     <section id="galeri" class="section">
       <div class="section-container">
-        <div class="section-header">
+        <div class="section-header reveal">
           <span class="section-tag">Galeri</span>
           <h2>Keindahan <span class="highlight">Alam Kuningan</span></h2>
           <p class="section-subtitle">Panorama sumber mata air yang dijaga oleh tradisi Kawin Cai</p>
         </div>
         <div class="gallery-grid">
           <div v-for="(item, idx) in gallery" :key="item.id" 
-               :class="['gallery-item', { 'large': item.is_featured }]">
-            <img :src="item.image_url" :alt="item.title" />
-            <div class="gallery-overlay"><span>{{ item.title }}</span></div>
+               :class="['gallery-item', 'reveal', { 'large': item.is_featured }]">
+            <img :src="item.image_url" alt="" />
+            <div class="gallery-overlay">
+              <span class="gallery-tag" v-if="item.is_featured">Featured</span>
+              <h3>{{ item.title }}</h3>
+              <p v-if="item.caption">{{ item.caption }}</p>
+            </div>
           </div>
           <div v-if="gallery.length === 0" class="col-12 text-center py-5 text-muted">
             Belum ada foto galeri.
@@ -226,7 +268,7 @@
     </section>
 
     <!-- CTA Section -->
-    <section class="cta-section">
+    <section class="cta-section reveal">
       <div class="section-container text-center">
         <h2>Ikut Lestarikan Tradisi Kawin Cai</h2>
         <p>Jadilah bagian dari gerakan pelestarian mata air dan budaya Sunda.</p>
@@ -274,9 +316,23 @@ definePageMeta({ layout: false })
 const theme = ref('light')
 const stats = ref({ total: 0 })
 const gallery = ref([])
+const isScrolled = ref(false)
+const showMobileMenu = ref(false)
 
 const toggleTheme = () => {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
+}
+
+const toggleMobileMenu = () => {
+  showMobileMenu.value = !showMobileMenu.value
+}
+
+const closeMobileMenu = () => {
+  showMobileMenu.value = false
+}
+
+const handleScroll = () => {
+  isScrolled.value = window.scrollY > 50
 }
 
 const traditions = [
@@ -303,7 +359,24 @@ const benefits = [
   { icon: 'bi bi-graph-up-arrow', title: 'Pariwisata Budaya', desc: 'Menarik wisatawan yang tertarik dengan kearifan lokal dan keindahan alam Kuningan.' }
 ]
 
+const setupObserver = () => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active')
+      }
+    })
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' })
+
+  document.querySelectorAll('.reveal:not(.active)').forEach(el => observer.observe(el))
+}
+
 onMounted(async () => {
+  window.addEventListener('scroll', handleScroll)
+  
+  // Initial observe for static elements
+  setupObserver()
+
   try {
     const [statsData, galleryData] = await Promise.all([
       $fetch('/api/water-points/stats'),
@@ -311,9 +384,18 @@ onMounted(async () => {
     ])
     stats.value = statsData
     gallery.value = galleryData
+    
+    // Wait for DOM to update then observe new gallery items
+    nextTick(() => {
+      setupObserver()
+    })
   } catch (e) {
     console.error('Failed to initial fetch:', e)
   }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
 })
 </script>
 
@@ -329,51 +411,82 @@ onMounted(async () => {
 
 /* ===== LIGHT THEME (DEFAULT) ===== */
 .landing.light {
-  --bg: #ffffff;
-  --bg-alt: #f8f9fc;
-  --text: #1e293b;
-  --text-sub: #64748b;
-  --primary: #0ea5e9;
-  --primary-soft: rgba(14, 165, 233, 0.08);
-  --accent: #0284c7;
-  --border: #e2e8f0;
+  --bg: #fdfcf8; /* Creamy paper */
+  --bg-alt: #f1f5f2; /* Pale forest mist */
+  --text: #064e3b; /* Deep Sunda Green */
+  --text-sub: #445c55;
+  --primary: #059669; /* Forest Emerald */
+  --primary-soft: rgba(5, 150, 105, 0.08);
+  --accent: #d97706; /* Batik Gold */
+  --accent-soft: rgba(217, 119, 6, 0.1);
+  --border: #d1d5db;
   --card-bg: #ffffff;
-  --card-shadow: 0 4px 24px -4px rgba(0,0,0,0.06);
-  --nav-bg: rgba(255,255,255,0.85);
-  --hero-gradient: linear-gradient(160deg, #f0f9ff 0%, #e0f2fe 40%, #f8fafc 100%);
-  --highlight-color: #0ea5e9;
-  --tag-bg: rgba(14,165,233,0.08);
-  --tag-color: #0284c7;
-  --footer-bg: #0f172a;
-  --footer-text: #94a3b8;
+  --card-shadow: 0 10px 30px -10px rgba(6, 78, 59, 0.15);
+  --nav-bg: rgba(253, 252, 248, 0.9);
+  --hero-gradient: linear-gradient(135deg, #ecfdf5 0%, #fefce8 100%);
+  --highlight-color: #d97706;
+  --tag-bg: #fef3c7;
+  --tag-color: #92400e;
+  --footer-bg: #064e3b;
+  --footer-text: #ecfdf5;
   background: var(--bg);
   color: var(--text);
 }
 
 /* ===== DARK THEME ===== */
 .landing.dark {
-  --bg: #0f172a;
-  --bg-alt: #1e293b;
-  --text: #f1f5f9;
-  --text-sub: #94a3b8;
-  --primary: #38bdf8;
-  --primary-soft: rgba(56, 189, 248, 0.1);
-  --accent: #0ea5e9;
+  --bg: #022c22; /* Midnight Forest */
+  --bg-alt: #064e3b;
+  --text: #ecfdf5;
+  --text-sub: #a7f3d0;
+  --primary: #10b981;
+  --primary-soft: rgba(16, 185, 129, 0.1);
+  --accent: #fbbf24;
+  --accent-soft: rgba(251, 191, 36, 0.1);
   --border: rgba(255,255,255,0.08);
-  --card-bg: rgba(30, 41, 59, 0.6);
-  --card-shadow: 0 4px 24px -4px rgba(0,0,0,0.3);
-  --nav-bg: rgba(15,23,42,0.9);
-  --hero-gradient: linear-gradient(160deg, #0f172a 0%, #1e293b 40%, #0f172a 100%);
-  --highlight-color: #38bdf8;
-  --tag-bg: rgba(56,189,248,0.1);
-  --tag-color: #38bdf8;
-  --footer-bg: #020617;
+  --card-bg: rgba(6, 78, 59, 0.4);
+  --card-shadow: 0 10px 40px -10px rgba(0,0,0,0.4);
+  --nav-bg: rgba(2, 44, 34, 0.95);
+  --hero-gradient: linear-gradient(135deg, #022c22 0%, #064e3b 100%);
+  --highlight-color: #fbbf24;
+  --tag-bg: rgba(251, 191, 36, 0.1);
+  --tag-color: #fbbf24;
+  --footer-bg: #011c15;
   --footer-text: #64748b;
   background: var(--bg);
   color: var(--text);
 }
 
+/* Sunda Motif Patterns */
+.landing::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 35c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm60-13c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM66 62c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm-9-20c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm20 22c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM18 5c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm-7 13c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm2-5c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm13 14c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm23 20c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm-12 12c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm20 24c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm1 1c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm-21-23c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm-7-7c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm13 13c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d1d5db' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Sunda Motif Patterns */
+.landing::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 35c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm60-13c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM66 62c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm-9-20c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm20 22c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM18 5c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm-7 13c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm2-5c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm13 14c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm23 20c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm-12 12c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm20 24c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm1 1c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm-21-23c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm-7-7c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm13 13c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d1d5db' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
 .highlight { color: var(--highlight-color); }
+
+/* Custom Sunda Decorations */
+.sunda-decoration {
+  position: absolute;
+  width: 151px; height: 100px;
+  background-image: url("data:image/svg+xml,%3Csvg width='151' height='100' viewBox='0 0 151 100' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 50C0 22.3858 22.3858 0 50 0C77.6142 0 100 22.3858 100 50C100 77.6142 77.6142 100 50 100C22.3858 100 0 77.6142 0 50ZM50 80C66.5685 80 80 66.5685 80 50C80 33.4315 66.5685 20 50 20C33.4315 20 20 33.4315 20 50C20 66.5685 33.4315 80 50 80Z' fill='%23fbbf24' fill-opacity='0.1'/%3E%3C/svg%3E");
+  opacity: 0.3;
+  pointer-events: none;
+}
 
 /* ===== NAVBAR ===== */
 .navbar {
@@ -383,7 +496,10 @@ onMounted(async () => {
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
   padding: 16px 0;
+  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
 }
+.navbar.scrolled { padding: 10px 0; box-shadow: var(--card-shadow); }
+
 .nav-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -396,42 +512,126 @@ onMounted(async () => {
 .nav-brand {
   display: flex; align-items: center; gap: 10px;
   text-decoration: none;
-  font-weight: 800; font-size: 20px;
+  font-weight: 800; font-size: 22px;
   color: var(--text);
+  letter-spacing: -1px;
 }
-.nav-brand i { color: var(--primary); font-size: 24px; }
+.nav-brand i { 
+  color: var(--primary); 
+  font-size: 26px;
+  text-shadow: 0 4px 10px var(--primary-soft);
+}
 .nav-links { display: flex; gap: 32px; }
 .nav-links a {
   text-decoration: none; color: var(--text-sub);
   font-weight: 600; font-size: 14px;
-  transition: color .2s;
+  transition: all .2s;
   white-space: nowrap;
+  position: relative;
 }
-.nav-links a:hover { color: var(--primary); }
+.nav-links a::after {
+  content: "";
+  position: absolute; bottom: -4px; left: 0; width: 0; height: 2px;
+  background: var(--accent);
+  transition: width .3s;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-links a:hover::after { width: 100%; }
+
 .nav-actions { display: flex; align-items: center; gap: 14px; }
 .theme-toggle {
-  width: 40px; height: 40px;
+  width: 44px; height: 44px;
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--card-bg);
   color: var(--text);
-  font-size: 16px;
+  font-size: 18px;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: all .2s;
 }
-.theme-toggle:hover { border-color: var(--primary); color: var(--primary); }
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); transform: scale(1.05); }
+
 .btn-login {
-  padding: 10px 20px;
+  padding: 12px 24px;
   background: var(--primary);
   color: white;
   border-radius: 12px;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 14px;
+  transition: all .3s;
+  box-shadow: 0 4px 15px -4px var(--primary);
+}
+.btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -4px var(--primary); }
+
+.mobile-toggle {
+  width: 44px; height: 44px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 24px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
   transition: all .2s;
 }
-.btn-login:hover { opacity: .9; transform: translateY(-1px); }
+.mobile-toggle:hover { border-color: var(--primary); color: var(--primary); }
+
+/* ===== MOBILE MENU OVERLAY ===== */
+.mobile-menu-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: flex; justify-content: flex-end;
+}
+.mobile-menu-content {
+  width: 300px;
+  height: 100%;
+  background: var(--bg);
+  border-left: 1px solid var(--border);
+  padding: 24px;
+  display: flex; flex-direction: column;
+  box-shadow: -10px 0 40px rgba(0,0,0,0.1);
+  animation: slideInRight 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.mobile-menu-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 40px;
+}
+.close-btn {
+  background: transparent; border: none;
+  font-size: 20px; color: var(--text-sub);
+  cursor: pointer;
+}
+.mobile-links { display: flex; flex-direction: column; gap: 4px; margin-bottom: 40px; }
+.mobile-links a {
+  padding: 14px 20px;
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 16px;
+  border-radius: 12px;
+  transition: all .2s;
+}
+.mobile-links a:hover { background: var(--primary-soft); color: var(--primary); padding-left: 28px; }
+.mobile-actions { margin-top: auto; padding-top: 24px; border-top: 1px solid var(--border); }
+.mobile-actions .theme-toggle {
+  width: 100%;
+  justify-content: center;
+  gap: 10px;
+  background: var(--card-bg);
+}
+
+/* Fade Transition */
+.fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
 
 /* ===== HERO ===== */
 .hero {
@@ -446,17 +646,18 @@ onMounted(async () => {
 .shape {
   position: absolute; border-radius: 50%;
   opacity: 0.15; filter: blur(80px);
+  animation: float 10s infinite ease-in-out;
 }
-.shape-1 { width: 500px; height: 500px; background: var(--primary); top: -100px; right: -100px; }
-.shape-2 { width: 400px; height: 400px; background: #818cf8; bottom: -80px; left: -80px; }
-.shape-3 { width: 300px; height: 300px; background: #10b981; top: 40%; left: 50%; }
+.shape-1 { width: 500px; height: 500px; background: var(--primary); top: -100px; right: -100px; animation-delay: 0s; }
+.shape-2 { width: 400px; height: 400px; background: var(--accent); bottom: -80px; left: -80px; animation-delay: -2s; }
+.shape-3 { width: 300px; height: 300px; background: #10b981; top: 30%; left: 40%; animation-delay: -5s; }
 
 .hero-content {
   max-width: 800px;
   text-align: center;
   position: relative;
   z-index: 2;
-  animation: fadeUp .8s ease;
+  animation: revealUp 1s cubic-bezier(0.19, 1, 0.22, 1);
 }
 .hero-badge {
   display: inline-flex; align-items: center; gap: 10px;
@@ -466,30 +667,43 @@ onMounted(async () => {
   border-radius: 100px;
   font-size: 13px;
   font-weight: 700;
-  border: 1px solid var(--border);
+  border: 1px solid var(--accent-soft);
   margin-bottom: 28px;
 }
-.dot {
-  width: 8px; height: 8px;
-  background: var(--primary);
-  border-radius: 50%;
-  animation: pulse 2s infinite;
-}
 .hero h1 {
-  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
   font-weight: 900;
-  line-height: 1.1;
+  line-height: 1.05;
   margin-bottom: 20px;
-  letter-spacing: -1.5px;
+  letter-spacing: -2px;
+  color: var(--text);
 }
-.hero-desc {
-  font-size: 18px;
-  color: var(--text-sub);
-  line-height: 1.7;
-  margin-bottom: 36px;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
+.hero h1 .highlight {
+  background: linear-gradient(120deg, var(--accent) 0%, #ca8a04 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Animations */
+@keyframes revealUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+/* Scroll Reveal Classes */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
 }
 .hero-cta { display: flex; gap: 16px; justify-content: center; margin-bottom: 60px; }
 .btn-primary-cta {
@@ -681,13 +895,33 @@ onMounted(async () => {
 .gallery-item:hover img { transform: scale(1.08); }
 .gallery-overlay {
   position: absolute;
-  bottom: 0; left: 0; right: 0;
-  padding: 20px;
-  background: linear-gradient(transparent, rgba(0,0,0,.7));
-  color: white;
-  font-weight: 700;
-  font-size: 14px;
+  inset: 0;
+  padding: 30px;
+  background: linear-gradient(to top, rgba(6, 78, 59, 0.9) 0%, rgba(6, 78, 59, 0.4) 50%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
 }
+.gallery-item:hover .gallery-overlay {
+  opacity: 1;
+  transform: translateY(0);
+}
+.gallery-tag {
+  align-self: flex-start;
+  padding: 4px 10px;
+  background: var(--accent);
+  color: white;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.gallery-overlay h3 { color: white; font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+.gallery-overlay p { color: rgba(255,255,255,0.8); font-size: 13px; line-height: 1.5; margin: 0; }
 
 /* ===== CTA ===== */
 .cta-section {
