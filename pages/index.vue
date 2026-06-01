@@ -140,7 +140,7 @@
             <div class="about-card reveal">
               <div class="about-icon small-icon"><i class="bi bi-calendar-heart"></i></div>
               <h4>Dilakukan Berkala</h4>
-              <p>Upacara Kawin Cai dilaksanakan setiap tahun atau saat kondisi tertentu sebagai bentuk syukur dan permohonan kepada alam.</p>
+              <p>Upacara Kawin Cai dilaksanakan setiap tahun atau pada saat kondisi musim kemarau yg panjang, air permukaan sampai batas kritis. Sebagai bentuk syukur dan permohonan kepada alam.</p>
             </div>
           </div>
         </div>
