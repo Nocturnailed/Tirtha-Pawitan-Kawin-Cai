@@ -32,7 +32,7 @@ import { useRoute } from 'vue-router'
 import { useMqtt } from '~/composables/useMqtt'
 
 const route = useRoute()
-const { isConnected, connectionMode, initMqtt } = useMqtt()
+const { isConnected, connectionMode, connectionStatus, initMqtt } = useMqtt()
 
 const activeTab = computed(() => {
   const path = route.path
@@ -49,9 +49,22 @@ const sectionTitles: { [key: string]: string } = {
 
 const mqttConnected = computed(() => isConnected.value)
 const mqttStatus = computed(() => {
-  if (connectionMode.value === 'fallback') return 'IoT: Mode Simulasi'
-  return mqttConnected.value ? 'IoT: Terhubung' : 'IoT: Menghubungkan...'
+  const statusMap: Record<string, string> = {
+    connected: 'IoT: Terhubung',
+    connecting: 'IoT: Menghubungkan',
+    reconnecting: 'IoT: Rekoneksi',
+    disconnected: 'IoT: Terputus',
+    error: 'IoT: Kesalahan',
+    offline: 'IoT: Offline'
+  }
+  
+  const currentStatus = statusMap[connectionStatus.value] || 'IoT: Standby'
+  if (connectionMode.value === 'fallback') {
+    return `Mode Simulasi (${currentStatus})`
+  }
+  return currentStatus
 })
+
 
 onMounted(() => {
   initMqtt()

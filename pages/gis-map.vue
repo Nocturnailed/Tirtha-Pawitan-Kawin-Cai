@@ -248,6 +248,36 @@
           </form>
         </div>
       </div>
+
+      <!-- MQTT Logs Console -->
+      <div class="card custom-card mt-4 p-0 overflow-hidden shadow-sm border-0">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center px-4 py-2">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-terminal-fill text-success"></i>
+            <span class="fw-bold small text-uppercase tracking-wider">IoT Console Streams</span>
+          </div>
+          <div class="d-flex gap-3 align-items-center">
+            <button v-if="connectionStatus === 'disconnected' || connectionStatus === 'error'" 
+                    class="btn btn-sm btn-outline-success text-white border-success p-1 px-2" 
+                    style="font-size: 0.65rem;" 
+                    @click="initMqtt()">
+              <i class="bi bi-play-fill"></i> Hubungkan
+            </button>
+            <span class="badge bg-secondary p-1 px-2" style="font-size: 0.65rem;">{{ consoleLogs.length }} baris</span>
+            <button class="btn btn-sm btn-link text-white p-0" title="Bersihkan Log" @click="consoleLogs = []">
+              <i class="bi bi-trash-fill"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body bg-light p-3" style="height: 180px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;">
+          <div v-for="(log, i) in [...consoleLogs].reverse()" :key="i" class="mb-1 border-bottom border-secondary border-opacity-10 pb-1">
+            <span class="text-dark">{{ log }}</span>
+          </div>
+          <div v-if="consoleLogs.length === 0" class="text-center text-muted py-4 italic">
+            Belum ada aktivitas transmisi data...
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -262,7 +292,7 @@ import { useMqtt } from '~/composables/useMqtt'
 const waterPointStore = useWaterPointStore()
 const { success, error } = useNotification()
 const { initMap, drawMarkers, onMapClick, flyTo, invalidateSize, loadBoundary } = useMap()
-const { initMqtt } = useMqtt()
+const { initMqtt, consoleLogs, connectionStatus, disconnectMqtt } = useMqtt()
 
 const mapContainer = ref<HTMLElement | null>(null)
 const isSubmitting = ref(false)
