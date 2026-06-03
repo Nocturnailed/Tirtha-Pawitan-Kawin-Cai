@@ -304,6 +304,7 @@
         </div>
         <div class="footer-bottom">
           <p>© 2026 Tirtha Pawitan — Kabupaten Kuningan, Jawa Barat</p>
+          <p class="mt-2" style="font-size: 0.7rem; opacity: 0.6;">created by <a href="https://one.nocturnailed.com/" target="_blank" style="color: inherit; text-decoration: underline;">one.nocturnailed.com</a></p>
         </div>
       </div>
     </footer>

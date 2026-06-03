@@ -1,16 +1,28 @@
 <template>
-  <div class="container-fluid p-0">
-    <div class="row g-0">
-      <AppSidebar :active-tab="activeTab" />
+  <div class="container-fluid p-0 overflow-hidden">
+    <!-- Mobile Sidebar Overlay -->
+    <div 
+      v-if="isSidebarOpen" 
+      class="sidebar-overlay d-lg-none" 
+      @click="isSidebarOpen = false"
+    ></div>
 
-      <main class="col-lg-9 col-xl-10 d-flex flex-column" style="min-height: 100vh;">
+    <div class="row g-0 flex-nowrap">
+      <AppSidebar 
+        :active-tab="activeTab" 
+        :is-open="isSidebarOpen"
+        @close="isSidebarOpen = false"
+      />
+
+      <main class="col flex-grow-1 d-flex flex-column" style="min-height: 100vh; overflow-x: hidden;">
         <AppNavbar
           :section-title="sectionTitles[activeTab] || 'Sistem Informasi GIS'"
           :mqtt-connected="mqttConnected"
           :mqtt-status="mqttStatus"
+          @toggle-sidebar="isSidebarOpen = !isSidebarOpen"
         />
 
-        <div class="p-4 flex-grow-1">
+        <div class="p-4 flex-grow-1 container-max">
           <slot />
         </div>
 
@@ -18,6 +30,9 @@
           <p class="mb-0 text-muted" style="font-size: 0.85rem;">
             <strong>Sinergi Riset UTB — Program Bestari Saintek TA 2026</strong>. Menuju Kemandirian Sains & Teknologi Hijau Nasional.
           </p>
+          <div class="mt-1 text-muted opacity-75" style="font-size: 0.7rem;">
+            created by <a href="https://one.nocturnailed.com/" target="_blank" class="text-decoration-none text-muted fw-bold">one.nocturnailed.com</a>
+          </div>
         </footer>
       </main>
     </div>
@@ -32,6 +47,7 @@ import { useRoute } from 'vue-router'
 import { useMqtt } from '~/composables/useMqtt'
 
 const route = useRoute()
+const isSidebarOpen = ref(false)
 const { isConnected, connectionMode, connectionStatus, initMqtt } = useMqtt()
 
 const activeTab = computed(() => {

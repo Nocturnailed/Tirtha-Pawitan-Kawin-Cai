@@ -167,8 +167,43 @@ body {
 
 @media (max-width: 991.98px) {
   .sidebar {
-    min-height: auto;
-    position: relative;
-    width: 100%;
+    position: fixed;
+    height: 100vh;
+    z-index: 2000;
   }
 }
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 44, 36, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1040;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Responsive Map Height */
+@media (max-width: 991.98px) {
+  #map {
+    height: 380px !important;
+  }
+  
+  .container-max {
+    max-width: 100vw;
+    padding: 1rem !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container-max {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+}
+

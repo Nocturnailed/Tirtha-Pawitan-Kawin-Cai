@@ -1,8 +1,8 @@
 <template>
-  <div class="container-fluid">
-    <div class="row g-4">
+  <div class="container-fluid p-1 p-md-3">
+    <div class="row g-3 g-lg-4">
       <!-- Map Display -->
-      <div class="col-lg-8">
+      <div class="col-lg-8 order-1">
         <div class="card custom-card p-3 position-relative">
           <div class="d-flex justify-content-between align-items-center mb-2">
             <div class="d-flex align-items-center gap-2">
@@ -26,9 +26,9 @@
       </div>
 
       <!-- Forms Sidebar -->
-      <div class="col-lg-4">
+      <div class="col-lg-4 order-2 mt-2 mt-lg-0">
         <!-- Add Point Form -->
-        <div class="card custom-card p-4 mb-4">
+        <div class="card custom-card p-3 p-md-4 mb-4">
           <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
             <i class="bi bi-plus-circle-fill text-success"></i> Plot Titik Air Baru
           </h5>
@@ -177,7 +177,7 @@
         </div>
 
         <!-- Manual Override Form -->
-        <div class="card custom-card p-4 border-start border-danger border-4">
+        <div class="card custom-card p-3 p-md-4 border-start border-danger border-4">
           <h5 class="fw-bold text-danger mb-2 d-flex align-items-center gap-2">
             <i class="bi bi-person-badge-fill"></i> Override Petugas Lapangan
           </h5>
