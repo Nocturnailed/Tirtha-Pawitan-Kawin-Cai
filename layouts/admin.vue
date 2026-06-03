@@ -1,33 +1,64 @@
 <template>
-  <div :class="['admin-layout', theme]" v-if="!loading">
-    <!-- Sidebar (Desktop) -->
-    <aside class="sidebar d-none d-md-flex">
-      <div class="sidebar-top">
-        <NuxtLink to="/" class="sidebar-logo">
-          <i class="bi bi-droplet-fill"></i>
-        </NuxtLink>
-        
-        <nav class="sidebar-nav">
-          <NuxtLink 
-            v-for="item in filteredMenu" :key="item.path" 
-            :to="item.path" class="nav-item" 
-            :title="item.label"
-          >
-            <i :class="item.icon"></i>
-            <span class="nav-label">{{ item.label }}</span>
+  <div :class="['admin-layout', theme]">
+    <template v-if="!loading">
+      <!-- Sidebar (Desktop) -->
+      <aside class="sidebar d-none d-md-flex">
+        <div class="sidebar-top">
+          <NuxtLink to="/" class="sidebar-logo">
+            <i class="bi bi-droplet-fill"></i>
           </NuxtLink>
-        </nav>
-      </div>
+          
+          <nav class="sidebar-nav">
+            <NuxtLink 
+              v-for="item in filteredMenu" :key="item.path" 
+              :to="item.path" class="nav-item" 
+              :title="item.label"
+            >
+              <i :class="item.icon"></i>
+              <span class="nav-label">{{ item.label }}</span>
+            </NuxtLink>
+          </nav>
+        </div>
 
-      <div class="sidebar-bottom">
-        <button @click="toggleTheme" class="nav-item" :title="theme === 'light' ? 'Mode Gelap' : 'Mode Terang'">
-          <i :class="theme === 'light' ? 'bi bi-moon-stars' : 'bi bi-sun'"></i>
-        </button>
-        <div class="user-popover" v-if="user">
-          <div class="avatar" @click="showUserMenu = !showUserMenu">
-            {{ user.fullName.charAt(0) }}
+        <div class="sidebar-bottom">
+          <button @click="toggleTheme" class="nav-item" :title="theme === 'light' ? 'Mode Gelap' : 'Mode Terang'">
+            <i :class="theme === 'light' ? 'bi bi-moon-stars' : 'bi bi-sun'"></i>
+          </button>
+          <div class="user-popover" v-if="user">
+            <div class="avatar" @click="showUserMenu = !showUserMenu">
+              {{ user.fullName.charAt(0) }}
+            </div>
+            <div v-if="showUserMenu" class="user-dropdown">
+              <div class="dropdown-header">
+                <strong>{{ user.fullName }}</strong>
+                <span>{{ user.role.name }}</span>
+              </div>
+              <hr />
+              <button @click="navigateToProfile" class="dropdown-item">
+                <i class="bi bi-key-fill me-2"></i>Ganti Password
+              </button>
+              <button @click="handleLogout" class="dropdown-item text-danger">
+                <i class="bi bi-box-arrow-left me-2"></i>Keluar
+              </button>
+            </div>
           </div>
-          <div v-if="showUserMenu" class="user-dropdown">
+        </div>
+      </aside>
+
+      <!-- Mobile Header -->
+      <header class="content-header d-flex d-md-none justify-content-between align-items-center px-4 py-3 border-bottom shadow-sm">
+        <div class="d-flex align-items-center gap-3">
+          <div class="mobile-logo-bg">
+            <i class="bi bi-droplet-fill"></i>
+          </div>
+          <div>
+            <h1 class="h6 mb-0 fw-bold">Tirtha Pawitan</h1>
+            <p class="mb-0 text-muted" style="font-size: 10px; letter-spacing: 0.5px;">ADMIN PANEL</p>
+          </div>
+        </div>
+        <div class="user-popover" v-if="user">
+          <div class="avatar-mobile" @click="showUserMenu = !showUserMenu">{{ user?.fullName.charAt(0) }}</div>
+          <div v-if="showUserMenu" class="user-dropdown mobile">
             <div class="dropdown-header">
               <strong>{{ user.fullName }}</strong>
               <span>{{ user.role.name }}</span>
@@ -41,99 +72,79 @@
             </button>
           </div>
         </div>
-      </div>
-    </aside>
-
-    <!-- Mobile Header -->
-    <header class="content-header d-flex d-md-none justify-content-between align-items-center px-4 py-3 border-bottom shadow-sm">
-      <div class="d-flex align-items-center gap-2">
-        <div class="mobile-logo-bg">
-          <i class="bi bi-droplet-fill"></i>
-        </div>
-        <span class="fw-bold small" style="letter-spacing: 0.5px;">ADMIN PANEL</span>
-      </div>
-      <div class="user-popover" v-if="user">
-        <div class="avatar-mobile" @click="showUserMenu = !showUserMenu">{{ user?.fullName.charAt(0) }}</div>
-        <div v-if="showUserMenu" class="user-dropdown mobile">
-          <div class="dropdown-header">
-            <strong>{{ user.fullName }}</strong>
-            <span>{{ user.role.name }}</span>
-          </div>
-          <hr />
-          <button @click="navigateToProfile" class="dropdown-item">
-            <i class="bi bi-key-fill me-2"></i>Ganti Password
-          </button>
-          <button @click="handleLogout" class="dropdown-item text-danger">
-            <i class="bi bi-box-arrow-left me-2"></i>Keluar
-          </button>
-        </div>
-      </div>
-    </header>
+      </header>
+    </template>
 
     <!-- Content -->
     <div class="content-wrapper">
-      <main class="main-content">
+      <main class="main-content" v-if="!loading">
         <slot />
       </main>
+      <div v-else class="loading-full-screen">
+        <div class="spinner-border text-primary"></div>
+      </div>
     </div>
 
-    <!-- Bottom Navigation (Mobile) -->
-    <nav class="mobile-bottom-nav d-flex d-md-none justify-content-around align-items-center">
-      <NuxtLink 
-        v-for="item in mobileItems" :key="item.path" 
-        :to="item.path" class="mobile-nav-item"
-      >
-        <i :class="item.icon"></i>
-        <span>{{ item.label }}</span>
-      </NuxtLink>
-      <button 
-        class="mobile-nav-item border-0 bg-transparent" 
-        @click="showMobileFullMenu = !showMobileFullMenu"
-        :class="{ active: showMobileFullMenu }"
-      >
-        <i class="bi" :class="showMobileFullMenu ? 'bi-x-circle-fill' : 'bi-three-dots'"></i>
-        <span>{{ showMobileFullMenu ? 'Tutup' : 'Menu' }}</span>
-      </button>
-    </nav>
+    <template v-if="!loading">
+      <!-- Bottom Navigation (Mobile) -->
+      <nav class="mobile-bottom-nav d-flex d-md-none justify-content-around align-items-center">
+        <NuxtLink 
+          v-for="item in mobileItems" :key="item.path" 
+          :to="item.path" class="mobile-nav-item"
+        >
+          <i :class="item.icon"></i>
+          <span>{{ item.label }}</span>
+        </NuxtLink>
+        <button 
+          class="mobile-nav-item border-0 bg-transparent" 
+          @click="showMobileFullMenu = !showMobileFullMenu"
+          :class="{ active: showMobileFullMenu }"
+        >
+          <i class="bi" :class="showMobileFullMenu ? 'bi-grid-fill' : 'bi-three-dots'"></i>
+          <span>{{ showMobileFullMenu ? 'Lainnya' : 'Menu' }}</span>
+        </button>
+      </nav>
 
-    <!-- Mobile Drawer -->
-    <Transition name="drawer">
-      <div v-if="showMobileFullMenu" class="mobile-drawer-overlay" @click="showMobileFullMenu = false">
-        <div class="mobile-drawer-content" @click.stop>
-          <div class="drawer-header border-bottom px-4 py-3 d-flex justify-content-between align-items-center">
-            <span class="fw-bold small text-muted text-uppercase tracking-wider">Navigasi Admin</span>
-            <i class="bi bi-chevron-down text-muted"></i>
-          </div>
-          <div class="drawer-body p-3">
-            <div class="row g-2">
-              <div v-for="item in filteredMenu" :key="item.path" class="col-4">
-                <NuxtLink 
-                  :to="item.path" 
-                  class="drawer-nav-btn"
-                  @click="showMobileFullMenu = false"
-                >
-                  <i :class="item.icon"></i>
-                  <span>{{ item.label }}</span>
-                </NuxtLink>
-              </div>
+      <!-- Mobile Drawer -->
+      <Transition name="drawer">
+        <div v-if="showMobileFullMenu" class="mobile-drawer-overlay" @click="showMobileFullMenu = false">
+          <div class="mobile-drawer-content" @click.stop>
+            <div class="drawer-header border-bottom px-4 py-3 d-flex justify-content-between align-items-center">
+              <span class="fw-bold small text-muted text-uppercase tracking-wider">Navigasi Penuh</span>
+              <button class="btn-close btn-close-white" @click="showMobileFullMenu = false"></button>
             </div>
-            
-            <div class="mt-4 border-top pt-3 d-flex justify-content-between align-items-center px-2">
-              <button @click="toggleTheme" class="btn btn-sm btn-light rounded-pill px-3 py-2 border">
-                <i :class="theme === 'light' ? 'bi bi-moon-stars me-2' : 'bi bi-sun me-2'"></i>
-                {{ theme === 'light' ? 'Mode Gelap' : 'Mode Terang' }}
-              </button>
-              <button @click="handleLogout" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-2">
-                <i class="bi bi-box-arrow-left me-2"></i>Keluar
-              </button>
+            <div class="drawer-body p-4">
+              <div class="row g-3">
+                <div v-for="item in filteredMenu" :key="item.path" class="col-4">
+                  <NuxtLink 
+                    :to="item.path" 
+                    class="drawer-nav-btn text-center"
+                    @click="showMobileFullMenu = false"
+                  >
+                    <div class="drawer-icon mb-2">
+                      <i :class="item.icon"></i>
+                    </div>
+                    <span class="drawer-label">{{ item.label }}</span>
+                  </NuxtLink>
+                </div>
+              </div>
+              
+              <div class="mt-5 pt-4 border-top">
+                <div class="d-flex gap-3">
+                  <button @click="toggleTheme" class="btn btn-light w-100 flex-grow-1 py-3 rounded-4 shadow-sm border">
+                    <i :class="theme === 'light' ? 'bi bi-moon-stars me-2' : 'bi bi-sun me-2'"></i>
+                    {{ theme === 'light' ? 'Dark' : 'Light' }}
+                  </button>
+                  <button @click="handleLogout" class="btn btn-outline-danger w-100 flex-grow-1 py-3 rounded-4 shadow-sm">
+                    <i class="bi bi-box-arrow-left me-2"></i>Keluar
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </Transition>
-  </div>
-  <div v-else class="loading-overlay">
-    <div class="spinner-border text-primary"></div>
+      </Transition>
+    </template>
   </div>
 </template>
 
@@ -316,22 +327,30 @@ onMounted(fetchUser)
 .drawer-leave-to .mobile-drawer-content { transform: translateY(100%); }
 
 .mobile-drawer-overlay {
-  position: fixed; inset: 0; background: rgba(15, 44, 36, 0.6);
+  position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5);
   backdrop-filter: blur(8px); z-index: 2000;
 }
 .mobile-drawer-content {
   position: absolute; bottom: 0; left: 0; width: 100%;
   background: var(--sidebar-bg); border-radius: 24px 24px 0 0;
   max-height: 80vh; overflow-y: auto; padding-bottom: 90px;
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
 }
 .drawer-nav-btn {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 16px 8px; border-radius: 16px; transition: all .2s; border: 1px solid var(--border);
-  text-decoration: none; color: var(--text); background: var(--bg); height: 100%;
+  padding: 16px 8px; border-radius: 20px; transition: all .2s;
+  text-decoration: none; color: var(--text); border: 1px solid transparent;
 }
-.drawer-nav-btn i { font-size: 24px; color: var(--primary); margin-bottom: 8px; }
-.drawer-nav-btn span { font-size: 10px; font-weight: 700; text-transform: uppercase; text-align: center; }
-.drawer-nav-btn:active { background: var(--primary-soft); }
+.drawer-icon {
+  width: 52px; height: 52px; border-radius: 16px; background: var(--primary-soft);
+  color: var(--primary); display: flex; align-items: center; justify-content: center;
+  font-size: 24px; transition: all 0.2s;
+}
+.drawer-nav-btn:active .drawer-icon { transform: scale(0.9); background: var(--primary); color: white; }
+.drawer-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-sub); }
 
-.loading-overlay { height: 100vh; display: flex; align-items: center; justify-content: center; background: #0f172a; }
+.loading-full-screen { 
+  position: fixed; inset: 0; background: var(--bg); 
+  display: flex; align-items: center; justify-content: center; z-index: 3000; 
+}
 </style>
