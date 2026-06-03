@@ -1,7 +1,7 @@
 <template>
   <div :class="['admin-layout', theme]" v-if="!loading">
-    <!-- Sidebar -->
-    <aside class="sidebar">
+    <!-- Sidebar (Desktop) -->
+    <aside class="sidebar d-none d-md-flex">
       <div class="sidebar-top">
         <NuxtLink to="/" class="sidebar-logo">
           <i class="bi bi-droplet-fill"></i>
@@ -27,7 +27,7 @@
           <div class="avatar" @click="showUserMenu = !showUserMenu">
             {{ user.fullName.charAt(0) }}
           </div>
-            <div v-if="showUserMenu" class="user-dropdown">
+          <div v-if="showUserMenu" class="user-dropdown">
             <div class="dropdown-header">
               <strong>{{ user.fullName }}</strong>
               <span>{{ user.role.name }}</span>
@@ -44,16 +44,49 @@
       </div>
     </aside>
 
+    <!-- Mobile Header -->
+    <header class="content-header d-flex d-md-none justify-content-between align-items-center px-4 py-3 border-bottom shadow-sm">
+      <div class="d-flex align-items-center gap-2">
+        <div class="mobile-logo-bg">
+          <i class="bi bi-droplet-fill"></i>
+        </div>
+        <span class="fw-bold small" style="letter-spacing: 0.5px;">ADMIN PANEL</span>
+      </div>
+      <div class="user-popover" v-if="user">
+        <div class="avatar-mobile" @click="showUserMenu = !showUserMenu">{{ user?.fullName.charAt(0) }}</div>
+        <div v-if="showUserMenu" class="user-dropdown mobile">
+          <div class="dropdown-header">
+            <strong>{{ user.fullName }}</strong>
+            <span>{{ user.role.name }}</span>
+          </div>
+          <hr />
+          <button @click="navigateToProfile" class="dropdown-item">
+            <i class="bi bi-key-fill me-2"></i>Ganti Password
+          </button>
+          <button @click="handleLogout" class="dropdown-item text-danger">
+            <i class="bi bi-box-arrow-left me-2"></i>Keluar
+          </button>
+        </div>
+      </div>
+    </header>
+
     <!-- Content -->
     <div class="content-wrapper">
-      <header class="content-header d-flex d-md-none justify-content-between align-items-center">
-        <NuxtLink to="/" class="mobile-logo"><i class="bi bi-droplet-fill"></i></NuxtLink>
-        <div class="avatar-mobile">{{ user?.fullName.charAt(0) }}</div>
-      </header>
       <main class="main-content">
         <slot />
       </main>
     </div>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="mobile-bottom-nav d-flex d-md-none justify-content-around align-items-center">
+      <NuxtLink 
+        v-for="item in mobileItems" :key="item.path" 
+        :to="item.path" class="mobile-nav-item"
+      >
+        <i :class="item.icon"></i>
+        <span>{{ item.label }}</span>
+      </NuxtLink>
+    </nav>
   </div>
   <div v-else class="loading-overlay">
     <div class="spinner-border text-primary"></div>
@@ -94,6 +127,12 @@ const filteredMenu = computed(() => {
   }
   return menuItems.filter(i => i.label === 'Dashboard')
 })
+
+const mobileItems = computed(() => {
+  const essential = ['Dashboard', 'Peta GIS', 'Titik Air', 'Users']
+  return filteredMenu.value.filter(i => essential.includes(i.label)).slice(0, 4)
+})
+
 
 const fetchUser = async () => {
   try {
@@ -173,7 +212,12 @@ onMounted(fetchUser)
   position: absolute; bottom: 50px; left: 20px; width: 200px;
   background: var(--sidebar-bg); border: 1px solid var(--border);
   border-radius: 16px; padding: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  z-index: 2000;
 }
+.user-dropdown.mobile {
+  top: 55px; right: 0; left: auto; bottom: auto;
+}
+
 .dropdown-header { margin-bottom: 12px; }
 .dropdown-header strong { display: block; font-size: 14px; }
 .dropdown-header span { font-size: 11px; color: var(--text-sub); }
@@ -186,11 +230,38 @@ onMounted(fetchUser)
 .main-content { padding: 40px; }
 
 @media (max-width: 768px) {
-  .sidebar { width: 100%; height: auto; position: fixed; bottom: 0; top: auto; flex-direction: row; padding: 10px 20px; border-right: none; border-top: 1px solid var(--border); }
-  .sidebar-logo, .user-popover { display: none; }
-  .sidebar-nav { flex-direction: row; width: 100%; justify-content: space-around; gap: 0; }
-  .content-wrapper { margin-left: 0; padding-bottom: 80px; }
-  .content-header { padding: 15px 20px; background: var(--sidebar-bg); border-bottom: 1px solid var(--border); }
+  .sidebar { display: none !important; }
+  .content-wrapper { margin-left: 0; padding-bottom: 90px; }
+  .main-content { padding: 24px 16px; }
+  
+  .content-header { 
+    background: var(--sidebar-bg); 
+    position: sticky; top: 0; z-index: 900;
+  }
+  
+  .mobile-logo-bg {
+    width: 34px; height: 34px; border-radius: 10px; background: var(--primary-soft);
+    color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 20px;
+  }
+  
+  .avatar-mobile {
+    width: 34px; height: 34px; border-radius: 10px; background: var(--primary);
+    color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px;
+  }
+  
+  .mobile-bottom-nav {
+    position: fixed; bottom: 0; left: 0; width: 100%; height: 75px;
+    background: var(--sidebar-bg); border-top: 1px solid var(--border);
+    z-index: 1000; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); padding: 0 12px;
+  }
+  
+  .mobile-nav-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    text-decoration: none; color: var(--text-sub); flex: 1; transition: all .2s;
+  }
+  .mobile-nav-item i { font-size: 22px; }
+  .mobile-nav-item span { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; }
+  .mobile-nav-item.router-link-active { color: var(--primary); }
 }
 
 .loading-overlay { height: 100vh; display: flex; align-items: center; justify-content: center; background: #0f172a; }

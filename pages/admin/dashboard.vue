@@ -1,13 +1,13 @@
 <template>
   <div class="dashboard-page">
-    <div class="dashboard-header mb-5">
-      <h2 class="fw-bold mb-1">Dashboard Administrasi</h2>
-      <p class="text-muted mb-0">Ringkasan kondisi monitoring titik mata air Kabupaten Kuningan.</p>
+    <div class="dashboard-header mb-4 mb-lg-5">
+      <h2 class="fw-bold mb-1 title-responsive">Dashboard Administrasi</h2>
+      <p class="text-muted mb-0 small">Ringkasan kondisi monitoring titik mata air Kabupaten Kuningan.</p>
     </div>
 
     <!-- Stat Cards -->
-    <div class="row g-4 mb-5">
-      <div class="col-md-6 col-lg-3" v-for="(stat, idx) in statCards" :key="idx">
+    <div class="row g-3 g-lg-4 mb-4 mb-lg-5">
+      <div class="col-6 col-lg-3" v-for="(stat, idx) in statCards" :key="idx">
         <div class="stat-card">
           <div class="stat-icon" :class="stat.color">
             <i :class="stat.icon"></i>
@@ -15,7 +15,7 @@
           <div class="stat-info">
             <span class="stat-label">{{ stat.label }}</span>
             <h3 class="stat-value">{{ stat.value }}</h3>
-            <p class="stat-desc">{{ stat.desc }}</p>
+            <p class="stat-desc d-none d-lg-block">{{ stat.desc }}</p>
           </div>
         </div>
       </div>
@@ -109,25 +109,32 @@ onMounted(async () => {
 
 <style scoped>
 .dashboard-page { padding: 4px; }
-.dashboard-header h2 { font-size: 24px; letter-spacing: -0.5px; }
+.dashboard-header .title-responsive { font-size: 24px; letter-spacing: -0.5px; }
 
 .stat-card {
   background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px;
-  padding: 24px; display: flex; gap: 20px; align-items: flex-start;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03); transition: transform .3s;
+  padding: 24px; display: flex; flex-direction: column; gap: 16px; align-items: flex-start;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03); transition: transform .3s; height: 100%;
 }
 .stat-card:hover { transform: translateY(-4px); }
 .stat-icon {
-  width: 54px; height: 54px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px;
+  width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 20px;
 }
-.stat-icon.primary { background: rgba(14,165,233,.1); color: #0ea5e9; }
-.stat-icon.info { background: rgba(6,182,212,.1); color: #06b6d4; }
-.stat-icon.success { background: rgba(16,185,129,.1); color: #10b981; }
-.stat-icon.danger { background: rgba(239,68,68,.1); color: #ef4444; }
+.stat-icon.primary { background: var(--primary-soft); color: var(--primary); }
+.stat-icon.info { background: var(--info-soft); color: var(--info); }
+.stat-icon.success { background: var(--success-soft); color: var(--success); }
+.stat-icon.danger { background: var(--danger-soft); color: var(--danger); }
 
-.stat-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-sub); letter-spacing: .5px; }
-.stat-value { font-size: 22px; font-weight: 800; margin: 4px 0; }
-.stat-desc { font-size: 12px; color: var(--text-sub); margin: 0; }
+.stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-sub); letter-spacing: .5px; display: block; margin-bottom: 2px; }
+.stat-value { font-size: 20px; font-weight: 800; margin: 0; }
+.stat-desc { font-size: 11px; color: var(--text-sub); margin: 4px 0 0; }
+
+@media (max-width: 768px) {
+  .stat-card { padding: 16px; gap: 10px; }
+  .stat-icon { width: 40px; height: 40px; font-size: 18px; border-radius: 12px; }
+  .stat-value { font-size: 18px; }
+  .dashboard-header .title-responsive { font-size: 20px; }
+}
 
 .dashboard-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
 .card-header-styled { padding: 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; }
