@@ -11,6 +11,9 @@ export default defineNuxtConfig({
     public: {
       // Supabase removed
     }
-
+  },
+  routeRules: {
+    '/api/water-points/stats': { swr: 600 },
+    '/api/gallery': { swr: 600 }
   }
 })

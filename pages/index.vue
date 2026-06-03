@@ -315,14 +315,20 @@
 definePageMeta({ layout: false })
 
 const theme = ref('light')
-const stats = ref({ total: 0 })
-const gallery = ref([])
 const isScrolled = ref(false)
 const showMobileMenu = ref(false)
+
+// Use SSR-friendly fetching with built-in caching
+const { data: statsData } = await useAsyncData('landing-stats', () => $fetch('/api/water-points/stats'))
+const { data: galleryData } = await useAsyncData('landing-gallery', () => $fetch('/api/gallery'))
+
+const stats = ref(statsData.value || { total: 0 })
+const gallery = ref(galleryData.value || [])
 
 const toggleTheme = () => {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
 }
+
 
 const toggleMobileMenu = () => {
   showMobileMenu.value = !showMobileMenu.value
@@ -372,27 +378,16 @@ const setupObserver = () => {
   document.querySelectorAll('.reveal:not(.active)').forEach(el => observer.observe(el))
 }
 
-onMounted(async () => {
+onMounted(() => {
   window.addEventListener('scroll', handleScroll)
   
   // Initial observe for static elements
   setupObserver()
 
-  try {
-    const [statsData, galleryData] = await Promise.all([
-      $fetch('/api/water-points/stats'),
-      $fetch('/api/gallery')
-    ])
-    stats.value = statsData
-    gallery.value = galleryData
-    
-    // Wait for DOM to update then observe new gallery items
-    nextTick(() => {
-      setupObserver()
-    })
-  } catch (e) {
-    console.error('Failed to initial fetch:', e)
-  }
+  // Wait for hydration/rendering to complete then observe dynamic items
+  nextTick(() => {
+    setupObserver()
+  })
 })
 
 onUnmounted(() => {
