@@ -86,7 +86,51 @@
         <i :class="item.icon"></i>
         <span>{{ item.label }}</span>
       </NuxtLink>
+      <button 
+        class="mobile-nav-item border-0 bg-transparent" 
+        @click="showMobileFullMenu = !showMobileFullMenu"
+        :class="{ active: showMobileFullMenu }"
+      >
+        <i class="bi" :class="showMobileFullMenu ? 'bi-x-circle-fill' : 'bi-three-dots'"></i>
+        <span>{{ showMobileFullMenu ? 'Tutup' : 'Menu' }}</span>
+      </button>
     </nav>
+
+    <!-- Mobile Drawer -->
+    <Transition name="drawer">
+      <div v-if="showMobileFullMenu" class="mobile-drawer-overlay" @click="showMobileFullMenu = false">
+        <div class="mobile-drawer-content" @click.stop>
+          <div class="drawer-header border-bottom px-4 py-3 d-flex justify-content-between align-items-center">
+            <span class="fw-bold small text-muted text-uppercase tracking-wider">Navigasi Admin</span>
+            <i class="bi bi-chevron-down text-muted"></i>
+          </div>
+          <div class="drawer-body p-3">
+            <div class="row g-2">
+              <div v-for="item in filteredMenu" :key="item.path" class="col-4">
+                <NuxtLink 
+                  :to="item.path" 
+                  class="drawer-nav-btn"
+                  @click="showMobileFullMenu = false"
+                >
+                  <i :class="item.icon"></i>
+                  <span>{{ item.label }}</span>
+                </NuxtLink>
+              </div>
+            </div>
+            
+            <div class="mt-4 border-top pt-3 d-flex justify-content-between align-items-center px-2">
+              <button @click="toggleTheme" class="btn btn-sm btn-light rounded-pill px-3 py-2 border">
+                <i :class="theme === 'light' ? 'bi bi-moon-stars me-2' : 'bi bi-sun me-2'"></i>
+                {{ theme === 'light' ? 'Mode Gelap' : 'Mode Terang' }}
+              </button>
+              <button @click="handleLogout" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-2">
+                <i class="bi bi-box-arrow-left me-2"></i>Keluar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </div>
   <div v-else class="loading-overlay">
     <div class="spinner-border text-primary"></div>
@@ -98,6 +142,7 @@ const user = ref(null)
 const loading = ref(true)
 const theme = ref('light')
 const showUserMenu = ref(false)
+const showMobileFullMenu = ref(false)
 
 const toggleTheme = () => {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
@@ -129,8 +174,8 @@ const filteredMenu = computed(() => {
 })
 
 const mobileItems = computed(() => {
-  const essential = ['Dashboard', 'Peta GIS', 'Titik Air', 'Users']
-  return filteredMenu.value.filter(i => essential.includes(i.label)).slice(0, 4)
+  const essential = ['Dashboard', 'Peta GIS', 'Titik Air']
+  return filteredMenu.value.filter(i => essential.includes(i.label)).slice(0, 3)
 })
 
 
@@ -261,8 +306,32 @@ onMounted(fetchUser)
   }
   .mobile-nav-item i { font-size: 22px; }
   .mobile-nav-item span { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; }
-  .mobile-nav-item.router-link-active { color: var(--primary); }
+  .mobile-nav-item.router-link-active, .mobile-nav-item.active { color: var(--primary); }
 }
+
+/* Drawer Animation */
+.drawer-enter-active, .drawer-leave-active { transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1); }
+.drawer-enter-from, .drawer-leave-to { opacity: 0; }
+.drawer-enter-from .mobile-drawer-content { transform: translateY(100%); }
+.drawer-leave-to .mobile-drawer-content { transform: translateY(100%); }
+
+.mobile-drawer-overlay {
+  position: fixed; inset: 0; background: rgba(15, 44, 36, 0.6);
+  backdrop-filter: blur(8px); z-index: 2000;
+}
+.mobile-drawer-content {
+  position: absolute; bottom: 0; left: 0; width: 100%;
+  background: var(--sidebar-bg); border-radius: 24px 24px 0 0;
+  max-height: 80vh; overflow-y: auto; padding-bottom: 90px;
+}
+.drawer-nav-btn {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 16px 8px; border-radius: 16px; transition: all .2s; border: 1px solid var(--border);
+  text-decoration: none; color: var(--text); background: var(--bg); height: 100%;
+}
+.drawer-nav-btn i { font-size: 24px; color: var(--primary); margin-bottom: 8px; }
+.drawer-nav-btn span { font-size: 10px; font-weight: 700; text-transform: uppercase; text-align: center; }
+.drawer-nav-btn:active { background: var(--primary-soft); }
 
 .loading-overlay { height: 100vh; display: flex; align-items: center; justify-content: center; background: #0f172a; }
 </style>
